@@ -32,4 +32,16 @@ export { Cross, Highlight } from "./mobject/composites.js";
 export { Text, type TextDecoration, type TextOptions } from "./mobject/text/text_mobject.js";
 export { Tex, type TexOptions } from "./mobject/text/tex_mobject.js";
 export { ArrayRow, ArrayCell, type ArrayRowOptions } from "./mobject/array_row.js";
+export { RightTriangle, type RightTriangleOptions } from "./mobject/right_triangle.js";
+export { UnitCircle, type UnitCircleOptions } from "./mobject/unit_circle.js";
+export { FractionBar, type FractionBarOptions } from "./mobject/fraction_bar.js";
+export { BarChart, type BarChartOptions } from "./mobject/bar_chart.js";
+export {
+  Brace,
+  Underline,
+  Pointer,
+  type BraceOptions,
+  type UnderlineOptions,
+  type PointerOptions,
+} from "./mobject/annotations.js";
 export { Canvas, canvas } from "./canvas.js";

@@ -1,6 +1,6 @@
 import { CONFIG } from "../../config.js";
 import { DOWN, LEFT, PI, RIGHT, UP } from "../../constants.js";
-import { WHITE, type ManimColor } from "../../utils/color.js";
+import { BLACK, WHITE, type ManimColor } from "../../utils/color.js";
 import type { Vec3 } from "../../utils/vec.js";
 import { Group } from "../group.js";
 import { VMobject } from "../vmobject.js";
@@ -150,7 +150,9 @@ export class NumberLine extends Group {
     const range = this.getTickRange();
     for (let i = 0; i < range.length && i < ticksList.length; i++) {
       const tick = ticksList[i]!;
-      const label = new Text(formatNumber(range[i]!), { fontSize });
+      // Black backing rect so the label stays readable when other geometry
+      // (curves, grid, neighboring ticks) crowds it.
+      const label = new Text(formatNumber(range[i]!), { fontSize, bgColor: BLACK });
       label.nextTo(tick, DOWN, undefined, 0);
       labels.add(label);
     }

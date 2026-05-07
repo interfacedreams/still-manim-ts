@@ -16,7 +16,13 @@ export class Polygram extends VMobject {
   constructor(opts: PolygramOptions) {
     const { vertices, ...rest } = opts;
     const merged: VMobjectOptions = { isClosed: false, ...rest };
-    if (!hasDefaultColorsSet(rest)) merged.defaultStrokeColor = GREEN;
+    if (
+      !hasDefaultColorsSet(rest) &&
+      rest.defaultFillColor === undefined &&
+      rest.defaultStrokeColor === undefined
+    ) {
+      merged.defaultStrokeColor = GREEN;
+    }
     super(merged);
     this._vertices = vertices.map((v) => [v[0], v[1], v[2]] as Vec3);
     this.generatePoints();
@@ -93,7 +99,13 @@ export class Polygon extends Polygram {
   constructor(opts: PolygonOptions) {
     const { cornerRadius = 0, ...rest } = opts;
     const merged: PolygramOptions = { isClosed: true, ...rest };
-    if (!hasDefaultColorsSet(rest)) merged.defaultFillColor = BLUE;
+    if (
+      !hasDefaultColorsSet(rest) &&
+      rest.defaultFillColor === undefined &&
+      rest.defaultStrokeColor === undefined
+    ) {
+      merged.defaultFillColor = BLUE;
+    }
     super(merged);
     // super() called Polygram.generatePoints (which dispatched here through
     // virtual call) — already produced closed-loop points via our override below.

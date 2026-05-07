@@ -31,7 +31,13 @@ export class Arc extends VMobject {
     } = opts;
     if (angle > TAU) throw new Error("Arc angle must be <= 2*PI");
     const merged: VMobjectOptions = { isClosed: angle === TAU, ...rest };
-    if (!hasDefaultColorsSet(rest)) merged.defaultStrokeColor = BLUE;
+    if (
+      !hasDefaultColorsSet(rest) &&
+      rest.defaultFillColor === undefined &&
+      rest.defaultStrokeColor === undefined
+    ) {
+      merged.defaultStrokeColor = BLUE;
+    }
     super(merged);
     this.radius = radius;
     this.arcCenter = [arcCenter[0], arcCenter[1], arcCenter[2]];

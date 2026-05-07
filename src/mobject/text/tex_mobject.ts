@@ -16,6 +16,10 @@ export type TexOptions = {
   zIndex?: number;
   /** Render in display style (block math) instead of inline. */
   display?: boolean;
+  /** Solid background rectangle behind the formula. */
+  bgColor?: ManimColor;
+  bgOpacity?: number;
+  bgPadding?: number;
 };
 
 /**
@@ -29,6 +33,9 @@ export class Tex extends TransformableMobject {
   fontSize: number;
   fillColor: ManimColor;
   fillOpacity: number;
+  bgColor: ManimColor | null;
+  bgOpacity: number;
+  bgPadding: number;
   protected _heading: number;
 
   /** Pixel-space dimensions at the current font size. */
@@ -48,6 +55,9 @@ export class Tex extends TransformableMobject {
     this.fontSize = opts.fontSize ?? CONFIG.defaultTextFontSize;
     this.fillColor = opts.color ?? CONFIG.defaultTextColor;
     this.fillOpacity = opts.opacity ?? 1.0;
+    this.bgColor = opts.bgColor ?? null;
+    this.bgOpacity = opts.bgOpacity ?? 0.2;
+    this.bgPadding = opts.bgPadding ?? 0.04;
     this.rendered = renderTex(latex, opts.display ?? false);
 
     const onePx = exToPx(this.fontSize);

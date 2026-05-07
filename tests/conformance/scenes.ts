@@ -23,7 +23,17 @@ import {
   Text,
   Tex,
   ArrayRow,
+  RightTriangle,
+  UnitCircle,
+  FractionBar,
+  BarChart,
+  Brace,
+  Underline,
+  Pointer,
+  Group,
+  BLUE,
   RIGHT,
+  LEFT,
   DOWN,
   UP,
   UR,
@@ -210,6 +220,175 @@ export const SCENES: Record<string, () => Mobject[]> = {
       DOWN,
     );
     return [row, formula];
+  },
+
+  // Six values (decimals, fractions, mixed numbers) on one number line,
+  // with a student-misconception inequality marked wrong below it.
+  decimal_misconception_on_number_line: () => {
+    const nl = new NumberLine({
+      xRange: [9, 10, 0.1],
+      length: 10,
+      includeNumbers: false,
+    });
+    // Two scale anchors at the endpoints — enough to imply the tick step (0.1)
+    // without crowding the line with eleven decimal labels.
+    const tick9 = new Dot({ point: nl.coordToPoint(9) });
+    const tick10 = new Dot({ point: nl.coordToPoint(10) });
+    const scale9 = new Tex("9", { fontSize: 24 }).nextTo(tick9, DOWN);
+    const scale10 = new Tex("10", { fontSize: 24 }).nextTo(tick10, DOWN);
+
+    // Above-line labels for most values; 49/5 goes below since it'd otherwise
+    // collide with the wider 9 3/4 label sitting next to it.
+    const above: Array<[string, number]> = [
+      ["9.25", 9.25],
+      [String.raw`9\tfrac{1}{2}`, 9.5],
+      ["9.61", 9.61],
+      [String.raw`9\tfrac{3}{4}`, 9.75],
+      ["9.9", 9.9],
+    ];
+    const markers: Mobject[] = [];
+    for (const [tex, val] of above) {
+      const dot = new Dot({ point: nl.coordToPoint(val), color: YELLOW });
+      const label = new Tex(tex, { fontSize: 28 }).nextTo(dot, UP);
+      markers.push(dot, label);
+    }
+    const dot49 = new Dot({ point: nl.coordToPoint(9.8), color: YELLOW });
+    const label49 = new Tex(String.raw`\frac{49}{5}`, { fontSize: 28 }).nextTo(dot49, DOWN);
+    markers.push(dot49, label49);
+
+    // Misconception inequality sits below everything, centered under the line.
+    const claim = new Tex(String.raw`9.61 < 9.5`, { fontSize: 36, color: RED })
+      .nextTo(nl, DOWN);
+    claim.shift([0, -0.7, 0]);
+    const wrong = new Cross({ size: 0.5, color: RED }).nextTo(claim, LEFT);
+    return [nl, scale9, scale10, ...markers, claim, wrong];
+  },
+
+  // Same number line, no misconception — instead, demonstrates a "callout"
+  // technique: 9 7/8 sits between 9 3/4 and 9.9 (too tight for the normal
+  // above-the-dot slot), so the label floats high and an arrow points down
+  // to the value on the line.
+  decimal_with_callout_on_number_line: () => {
+    const nl = new NumberLine({
+      xRange: [9, 10, 0.1],
+      length: 10,
+      includeNumbers: false,
+    });
+    const tick9 = new Dot({ point: nl.coordToPoint(9) });
+    const tick10 = new Dot({ point: nl.coordToPoint(10) });
+    const scale9 = new Tex("9", { fontSize: 24 }).nextTo(tick9, DOWN);
+    const scale10 = new Tex("10", { fontSize: 24 }).nextTo(tick10, DOWN);
+
+    const above: Array<[string, number]> = [
+      ["9.25", 9.25],
+      [String.raw`9\tfrac{1}{2}`, 9.5],
+      ["9.61", 9.61],
+      [String.raw`9\tfrac{3}{4}`, 9.75],
+      ["9.9", 9.9],
+    ];
+    const markers: Mobject[] = [];
+    for (const [tex, val] of above) {
+      const dot = new Dot({ point: nl.coordToPoint(val), color: YELLOW });
+      const label = new Tex(tex, { fontSize: 28 }).nextTo(dot, UP);
+      markers.push(dot, label);
+    }
+    const dot49 = new Dot({ point: nl.coordToPoint(9.8), color: YELLOW });
+    const label49 = new Tex(String.raw`\frac{49}{5}`, { fontSize: 28 }).nextTo(dot49, DOWN);
+    markers.push(dot49, label49);
+
+    const calloutDot = new Dot({ point: nl.coordToPoint(9.875), color: YELLOW });
+    const calloutAt = nl.coordToPoint(9.875);
+    const calloutLabel = new Tex(String.raw`9\tfrac{7}{8}`, { fontSize: 28 })
+      .shift([calloutAt[0], 1.6, 0]);
+    const calloutArrow = new Arrow({ start: calloutLabel, end: calloutDot });
+
+    return [nl, scale9, scale10, ...markers, calloutDot, calloutArrow, calloutLabel];
+  },
+
+  // ---- RightTriangle ----
+  right_triangle_default: () => [RightTriangle.fromLegs(3, 2)],
+  right_triangle_3_4_5: () => [
+    RightTriangle.fromLegs(3, 4, { legLabel: "3", altLegLabel: "4", hypLabel: "5" }),
+  ],
+  right_triangle_pythagorean: () => {
+    const tri = RightTriangle.fromLegs(3, 4);
+    const eq = new Tex(String.raw`a^2 + b^2 = c^2`, { fontSize: 32, color: YELLOW })
+      .nextTo(tri, DOWN);
+    return [tri, eq];
+  },
+  right_triangle_trig: () => {
+    const tri = RightTriangle.fromLegs(
+      4,
+      3,
+      { legLabel: String.raw`\text{adj}`, altLegLabel: String.raw`\text{opp}`, hypLabel: String.raw`\text{hyp}` },
+    );
+    return [tri];
+  },
+
+  // ---- UnitCircle ----
+  unit_circle_default: () => [new UnitCircle()],
+  unit_circle_quadrants: () => [
+    new UnitCircle({ angles: [0, PI / 2, PI, (3 * PI) / 2] }),
+  ],
+  unit_circle_coords: () => [new UnitCircle({ showCoords: true, fontSize: 14 })],
+
+  // ---- FractionBar ----
+  fraction_bar_3_5: () => [new FractionBar(3, 5)],
+  fraction_bar_1_2: () => [new FractionBar(1, 2)],
+  fraction_bar_7_8: () => [new FractionBar(7, 8, { shadeColor: GREEN })],
+
+  // ---- BarChart ----
+  bar_chart_basic: () => [new BarChart([4, 7, 3, 8, 2])],
+  bar_chart_labeled: () => [
+    new BarChart([4, 7, 3, 8, 2], {
+      labels: ["A", "B", "C", "D", "E"],
+      showValues: true,
+    }),
+  ],
+  bar_chart_colorful: () => [
+    new BarChart([4, 7, 3, 8, 2, 6], {
+      barColor: (i) => [RED, YELLOW, GREEN, RED, YELLOW, GREEN][i]!,
+    }),
+  ],
+
+  // ---- Annotations: Brace, Underline, Pointer ----
+  brace_under_row: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    const brace = Brace.withLabel(row, "the array", DOWN);
+    return [row, brace];
+  },
+  brace_under_pair: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    row.highlight([1, 2]);
+    const inner = new Group();
+    inner.add(row.at(1), row.at(2));
+    const brace = Brace.withTexLabel(inner, String.raw`\text{middle pair}`, DOWN);
+    return [row, brace];
+  },
+  brace_left_of_circle: () => {
+    const c = new Circle({ radius: 0.7 });
+    const brace = Brace.withLabel(c, "circle", LEFT);
+    return [c, brace];
+  },
+  underline_text: () => {
+    const t = new Text("important", { fontSize: 36 });
+    const u = new Underline(t, { color: YELLOW });
+    return [t, u];
+  },
+  underline_cell: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    const u = new Underline(row.at(2), { color: RED, strokeWidth: 4 });
+    return [row, u];
+  },
+  pointer_at_circle: () => {
+    const c = new Circle({ radius: 0.6, fillColor: BLUE });
+    const labeled = Pointer.withLabel(c, "this is a circle", { approachFrom: DOWN });
+    return [c, labeled];
+  },
+  pointer_at_array_cell: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    const labeled = Pointer.withLabel(row.at(2), "median candidate", { approachFrom: UP });
+    return [row, labeled];
   },
 };
 

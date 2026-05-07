@@ -10,7 +10,14 @@ export type CircleOptions = Omit<ArcOptions, "startAngle" | "angle"> & {
 export class Circle extends Arc {
   constructor(opts: CircleOptions = {}) {
     const merged: ArcOptions = { ...opts, startAngle: 0, angle: TAU };
-    if (!hasDefaultColorsSet(opts)) merged.defaultFillColor = BLUE;
+    // Don't override a default color a subclass (e.g. Dot) already set.
+    if (
+      !hasDefaultColorsSet(opts) &&
+      opts.defaultFillColor === undefined &&
+      opts.defaultStrokeColor === undefined
+    ) {
+      merged.defaultFillColor = BLUE;
+    }
     super(merged);
   }
 }

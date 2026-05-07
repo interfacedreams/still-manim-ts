@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "outputs": "npx tsx scripts/render_outputs.ts"
+    "outputs": "npx tsx scripts/render_outputs.ts",
+    "case-studies": "npx tsx scripts/render_case_studies.ts"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

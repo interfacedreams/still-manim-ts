@@ -169,6 +169,18 @@ export class Canvas {
   private textToSvg(text: Text, decimals: number): string[] {
     const startPt = this.toPixelCoords([text.svgUpperLeft], decimals)[0]!;
 
+    let bgRect = "";
+    if (text.bgColor) {
+      // Compute bbox in pixel space from boundingPoints — UR/UL/DL/DR.
+      const bboxPx = this.toPixelCoords(text.boundingPoints as Vec3[], decimals);
+      const xs = bboxPx.map((p) => p[0]);
+      const ys = bboxPx.map((p) => p[1]);
+      const xMin = Math.min(...xs), xMax = Math.max(...xs);
+      const yMin = Math.min(...ys), yMax = Math.max(...ys);
+      const padPx = toPixelLen(text.bgPadding, this.config.pw, this.config.fw, decimals);
+      bgRect = `<rect x="${numStr(xMin - padPx, decimals)}" y="${numStr(yMin - padPx, decimals)}" width="${numStr(xMax - xMin + 2 * padPx, decimals)}" height="${numStr(yMax - yMin + 2 * padPx, decimals)}" fill="${text.bgColor.value}" fill-opacity="${text.bgOpacity}"/>`;
+    }
+
     const familyKey = `${text.fontFamily}${text.italics ? "italics" : ""}${text.bold ? "bold" : ""}`;
     const objId = `id-${idOf(text)}`;
     const styleClass = `styleClass-${objId}`;
@@ -212,7 +224,7 @@ export class Canvas {
     const transform = `rotate(${numStr(rotateDeg, decimals)} ${numStr(center[0], decimals)} ${numStr(center[1], decimals)})`;
 
     const textEl = `<text class="${styleClass}" id="${objId}" transform="${transform}" x="${numStr(startPt[0], decimals)}" y="${numStr(startPt[1], decimals)}">${tspans.join("")}</text>`;
-    return [styleEl, textEl];
+    return bgRect ? [bgRect, styleEl, textEl] : [styleEl, textEl];
   }
 
   private texToSvg(tex: Tex, decimals: number): string | null {
@@ -220,6 +232,13 @@ export class Canvas {
     const w = tex.widthPx;
     const h = tex.heightPx;
     const [vbX, vbY, vbW, vbH] = tex.rendered.viewBox;
+
+    // Optional backing rect (so labels stay readable over busy backgrounds).
+    let bgRect = "";
+    if (tex.bgColor) {
+      const padPx = toPixelLen(tex.bgPadding, this.config.pw, this.config.fw, decimals);
+      bgRect = `<rect x="${numStr(ulPx[0] - padPx, decimals)}" y="${numStr(ulPx[1] - padPx, decimals)}" width="${numStr(w + 2 * padPx, decimals)}" height="${numStr(h + 2 * padPx, decimals)}" fill="${tex.bgColor.value}" fill-opacity="${tex.bgOpacity}"/>`;
+    }
 
     // Inner glyph content — drop MathJax's outer <svg> and replace currentColor
     // with the actual fill (avoids CSS-inheritance pitfalls in librsvg/magick).
@@ -246,7 +265,8 @@ export class Canvas {
       transform = `rotate(${numStr(headingDeg, decimals)} ${numStr(centerPx[0], decimals)} ${numStr(centerPx[1], decimals)}) ${transform}`;
     }
 
-    return `<g id="${objId}" fill-opacity="${tex.fillOpacity}" transform="${transform}">${inner}</g>`;
+    const glyphG = `<g id="${objId}" fill-opacity="${tex.fillOpacity}" transform="${transform}">${inner}</g>`;
+    return bgRect + glyphG;
   }
 
   private groupToRect(g: Mobject, decimals: number): string | null {

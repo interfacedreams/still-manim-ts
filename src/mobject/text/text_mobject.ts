@@ -25,6 +25,10 @@ export type TextOptions = {
   yPadding?: number;
   /** Inter-line spacing as a fraction of line height. */
   leading?: number;
+  /** Solid background rectangle behind the text (so other geometry doesn't overlap it). */
+  bgColor?: ManimColor;
+  bgOpacity?: number;
+  bgPadding?: number;
 };
 
 /**
@@ -44,6 +48,11 @@ export class Text extends TransformableMobject {
   fontSize: number;
   fontPath: string;
   fontFile: string;
+
+  /** When set, Canvas draws a backing rect of this color (sized to bbox + bgPadding) behind the text. */
+  bgColor: ManimColor | null;
+  bgOpacity: number;
+  bgPadding: number;
 
   // Layout (set by setupTextLayout)
   textTokens: string[] = [];
@@ -74,6 +83,11 @@ export class Text extends TransformableMobject {
     this.fontSize = opts.fontSize ?? CONFIG.defaultTextFontSize;
     this.fontFile = fontFileFor(this.fontFamily, this.bold, this.italics);
     this.fontPath = `${CONFIG.fontDir}/${this.fontFile}`;
+    this.bgColor = opts.bgColor ?? null;
+    // Default very translucent (~20% opaque) so the underlying grid/curve
+    // peeks through. Override with bgOpacity: 1 for full opacity.
+    this.bgOpacity = opts.bgOpacity ?? 0.2;
+    this.bgPadding = opts.bgPadding ?? 0.04;
 
     this.setupTextLayout({
       text,
