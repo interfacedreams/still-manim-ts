@@ -13,8 +13,9 @@ import {
 } from "../constants.js";
 import { CONFIG } from "../config.js";
 import type { ManimColor } from "../utils/color.js";
-import type { Vec3 } from "../utils/vec.js";
+import type { Vec2, Vec3 } from "../utils/vec.js";
 import { add, equals, scale as vscale, sub } from "../utils/vec.js";
+import { lineIntersect } from "../utils/space_ops.js";
 
 const BBOX_DIRS: Vec3[] = [UP, DOWN, LEFT, RIGHT, UL, UR, DL, DR];
 const CORNERS: Vec3[] = [UL, UR, DL, DR];
@@ -115,6 +116,16 @@ export abstract class Mobject {
     return this.top[1] - this.bottom[1];
   }
 
+  // -- Ray vs bounding polygon intersection ------------------------------------
+  /**
+   * Find the closest point where a 2D ray hits this mobject's bounding polygon.
+   * Handles rays from inside or outside. Falls back to `center` if no intersection.
+   * Used by Line/Arrow to snap endpoints to mobject boundaries.
+   */
+  getClosestIntersectingPoint2d(rayOrigin: Vec2, rayDir: Vec2): Vec3 {
+    return getClosestIntersectingPoint2dHelper(this.boundingPoints, rayOrigin, rayDir, this.center);
+  }
+
   // -- Absolute positioning ----------------------------------------------------
   setPosition(coord: Vec3 | readonly [number, number]): this {
     const c: Vec3 = coord.length === 2 ? [coord[0], coord[1] as number, 0] : coord as Vec3;
@@ -203,3 +214,24 @@ export abstract class Mobject {
   setColor(_color: ManimColor, _family = false): this { return this; }
   setOpacity(_opacity: number, _family = false): this { return this; }
 }
+
+const getClosestIntersectingPoint2dHelper = (
+  bounding: Vec3[],
+  rayOrigin: Vec2,
+  rayDir: Vec2,
+  fallback: Vec3,
+): Vec3 => {
+  let bestT = Infinity;
+  let bestPt: Vec3 | null = null;
+  const n = bounding.length;
+  for (let i = 0; i < n; i++) {
+    const p1 = bounding[i]!;
+    const p2 = bounding[(i + 1) % n]!;
+    const hit = lineIntersect(rayOrigin, rayDir, [p1[0], p1[1]], [p2[0], p2[1]]);
+    if (hit && hit.t < bestT) {
+      bestT = hit.t;
+      bestPt = [hit.point[0], hit.point[1], 0];
+    }
+  }
+  return bestPt ?? fallback;
+};

@@ -121,6 +121,8 @@ export const toPixelLen = (scalar: number, pw: number, fw: number, decimalPrecis
   return decimalPrecision !== undefined ? round(v, decimalPrecision) : v;
 };
 
+export const toManimLen = (scalar: number, pw: number, fw: number): number => scalar * (fw / pw);
+
 export const round = (x: number, decimals: number): number => {
   const f = Math.pow(10, decimals);
   return Math.round(x * f) / f;

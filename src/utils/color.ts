@@ -20,6 +20,13 @@ export const PINK = c("#D147BD");
 export const GRAY = c("#888888");
 export const GREY = GRAY;
 
+// Tone variants — same naming as smanim.utils.color.
+export const BLUE_A = c("#C7E9F1");
+export const BLUE_B = c("#9CDCEB");
+export const BLUE_C = c("#58C4DD");
+export const BLUE_D = c("#29ABCA");
+export const BLUE_E = c("#236B8E");
+
 // Mirrors smanim's `has_default_colors_set` — used by subclasses (e.g. Polygon) to know
 // whether the user passed any color kwarg, so they can apply their own default otherwise.
 export type ColorKwargs = {

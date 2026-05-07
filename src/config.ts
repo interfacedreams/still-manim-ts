@@ -25,6 +25,9 @@ export class Config {
   defaultTextColor: ManimColor = WHITE;
   defaultTextFontSize: number = DEFAULT_FONT_SIZE;
   defaultTextFontFamily: string = "computer-modern";
+  // Where bundled .ttf font files live. For now, points at still-manim's fonts dir.
+  // Override per-instance with `setFontDir(path)` to ship custom fonts.
+  fontDir: string = "/Users/tommyjoseph/tommy11jo/still-manim/smanim/mobject/text/fonts";
 
   constructor(opts: ConfigOptions = {}) {
     this.density = opts.density ?? DEFAULT_DENSITY;

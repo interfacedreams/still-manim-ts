@@ -1,9 +1,12 @@
+import { readFileSync } from "node:fs";
+
 import { CONFIG, Config } from "./config.js";
-import { Z_INDEX_MIN } from "./constants.js";
+import { RADIANS, Z_INDEX_MIN } from "./constants.js";
 import { Group } from "./mobject/group.js";
 import { Mobject } from "./mobject/mobject.js";
 import { VMobject } from "./mobject/vmobject.js";
 import { Rectangle } from "./mobject/geometry/polygon.js";
+import { Text } from "./mobject/text/text_mobject.js";
 import { round, toPixelCoords, toPixelLen } from "./utils/space_ops.js";
 import type { Vec3 } from "./utils/vec.js";
 import type { ManimColor } from "./utils/color.js";
@@ -21,6 +24,16 @@ const idOf = (m: object) => {
 
 const escapeXml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+const fontDataCache = new Map<string, string>();
+const fontAsBase64 = (path: string): string => {
+  let data = fontDataCache.get(path);
+  if (!data) {
+    data = readFileSync(path).toString("base64");
+    fontDataCache.set(path, data);
+  }
+  return data;
+};
 
 const numStr = (n: number, decimals = 3) => {
   const v = round(n, decimals);
@@ -43,6 +56,8 @@ const attrsString = (attrs: Record<string, string | number | null | undefined>) 
 export class Canvas {
   config: Config;
   mobjects: Group;
+  /** Track which (family, italic, bold) tuples we've already inlined as @font-face. */
+  private loadedFonts: Set<string> = new Set();
 
   constructor(config: Config = CONFIG) {
     this.config = config;
@@ -51,6 +66,7 @@ export class Canvas {
 
   reset(): void {
     this.mobjects = new Group();
+    this.loadedFonts = new Set();
   }
 
   add(...mobjects: Mobject[]): void {
@@ -93,6 +109,8 @@ export class Canvas {
       if (m instanceof VMobject) {
         const el = this.vmobjectToPath(m, decimals);
         if (el) elements.push(el);
+      } else if (m instanceof Text) {
+        elements.push(...this.textToSvg(m, decimals));
       } else if (m instanceof Group) {
         const el = this.groupToRect(m, decimals);
         if (el) elements.push(el);
@@ -142,6 +160,55 @@ export class Canvas {
       attrs["stroke-opacity"] = vm.strokeOpacity;
     }
     return `<path ${attrsString(attrs)}/>`;
+  }
+
+  private textToSvg(text: Text, decimals: number): string[] {
+    const startPt = this.toPixelCoords([text.svgUpperLeft], decimals)[0]!;
+
+    const familyKey = `${text.fontFamily}${text.italics ? "italics" : ""}${text.bold ? "bold" : ""}`;
+    const objId = `id-${idOf(text)}`;
+    const styleClass = `styleClass-${objId}`;
+    const cssLines = [
+      `.${styleClass} {`,
+      `    text-decoration: ${text.textDecoration};`,
+      `    fill: ${text.fillColor.value};`,
+      `    font-size: ${text.fontSize}px;`,
+      `    fill-opacity: ${text.fillOpacity};`,
+      `    font-family: ${familyKey};`,
+      `}`,
+    ];
+    const fontFaceKey = `${familyKey}|${text.fontPath}`;
+    if (!this.loadedFonts.has(fontFaceKey)) {
+      const base64 = fontAsBase64(text.fontPath);
+      cssLines.push(
+        `@font-face { font-family: ${familyKey}; src: url(data:font/otf;base64,${base64}) format('opentype'); }`,
+      );
+      this.loadedFonts.add(fontFaceKey);
+    }
+    const styleEl = `<style>${cssLines.join("\n")}</style>`;
+
+    const lineHeight = text.fontAscentPixels + text.fontDescentPixels + text.leadingPixels;
+    const tspans: string[] = [];
+    for (let i = 0; i < text.textTokens.length; i++) {
+      let dy = lineHeight;
+      if (i === 0) {
+        dy -= text.leadingPixels;
+        dy -= text.fontDescentPixels;
+        dy += text.yPaddingInPixels;
+      }
+      const escaped = escapeXml(text.textTokens[i]!);
+      tspans.push(
+        `<tspan x="${numStr(startPt[0], decimals)}" dx="${numStr(text.xPaddingInPixels, decimals)}" dy="${numStr(dy, decimals)}">${escaped}</tspan>`,
+      );
+    }
+
+    const center = this.toPixelCoords([text.center], decimals)[0]!;
+    // SVG rotate is clockwise, manim is CCW — negate.
+    const rotateDeg = -text.heading * RADIANS;
+    const transform = `rotate(${numStr(rotateDeg, decimals)} ${numStr(center[0], decimals)} ${numStr(center[1], decimals)})`;
+
+    const textEl = `<text class="${styleClass}" id="${objId}" transform="${transform}" x="${numStr(startPt[0], decimals)}" y="${numStr(startPt[1], decimals)}">${tspans.join("")}</text>`;
+    return [styleEl, textEl];
   }
 
   private groupToRect(g: Mobject, decimals: number): string | null {
