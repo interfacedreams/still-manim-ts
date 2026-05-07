@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { DEFAULT_STROKE_WIDTH, ORIGIN, OUT, PI } from "../constants.js";
-import { WHITE, type ManimColor } from "../utils/color.js";
+import type { ManimColor } from "../utils/color.js";
 import type { Vec3 } from "../utils/vec.js";
 import { interpolate, linspace01 } from "../utils/bezier.js";
 import { TransformableMobject } from "./transformable.js";
@@ -55,7 +56,7 @@ export abstract class VMobject extends TransformableMobject {
         if (strokeOpacity === undefined) strokeOpacity = opacity ?? 1.0;
         if (strokeWidth === undefined) strokeWidth = 4.0;
       } else {
-        fillColor = defaultFillColor ?? WHITE;
+        fillColor = defaultFillColor ?? CONFIG.defaultTextColor;
         if (fillOpacity === undefined) fillOpacity = 1.0;
       }
     } else {

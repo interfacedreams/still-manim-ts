@@ -1,5 +1,5 @@
+import { CONFIG } from "../../config.js";
 import { DOWN, LEFT, ORIGIN, PI, RIGHT, TINY_BUFF } from "../../constants.js";
-import { WHITE, type ManimColor } from "../../utils/color.js";
 import type { Vec3 } from "../../utils/vec.js";
 import { Mobject } from "../mobject.js";
 import { Line, type LineOptions } from "./line.js";
@@ -39,7 +39,7 @@ class TipableLine extends Line {
     const tip = tipShape({
       length: tipLength,
       width: tipWidth,
-      defaultFillColor: this.strokeColor ?? WHITE,
+      defaultFillColor: this.strokeColor ?? CONFIG.defaultTextColor,
       ...extraTipOpts,
     });
     const rotateScalar = atStart ? 1 : -1;
@@ -59,7 +59,7 @@ export class Arrow extends TipableLine {
     const {
       start = LEFT,
       end = RIGHT,
-      color = WHITE,
+      color = CONFIG.defaultTextColor,
       opacity = 1.0,
       buff = 0,
       tipLength = 0.2,

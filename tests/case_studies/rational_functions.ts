@@ -1,10 +1,15 @@
 /**
  * "Rational functions" case study — 7 panels exploring the function
  * y = 1/(x − 3), interval/set notation, and a factored rational with a hole.
+ *
+ * Color scheme (light-mode rule): BLUE_E primary, RED secondary, GREEN_D
+ * tertiary, BLACK for written labels. Orange/yellow only appear via the
+ * low-opacity YELLOW table-row highlight.
  */
 import {
   Arrow,
   Circle,
+  CONFIG,
   DOWN,
   Dot,
   Group,
@@ -18,10 +23,8 @@ import {
   Text,
   UP,
   YELLOW,
-  GREEN,
-  BLUE,
-  WHITE,
-  BLACK,
+  GREEN_D,
+  BLUE_E,
   type Mobject,
 } from "../../src/index.js";
 
@@ -37,9 +40,9 @@ const tableOfValues = (): Mobject[] => {
   // Highlight x=3 column (index 4).
   t.highlight([[0, 4], [1, 4]], YELLOW);
 
-  const formula = new Tex(String.raw`y = \frac{1}{x - 3}`, { fontSize: 36, bgColor: BLACK })
+  const formula = new Tex(String.raw`y = \frac{1}{x - 3}`, { fontSize: 36, bgColor: CONFIG.defaultLabelBgColor })
     .nextTo(t, UP, undefined, 0.5);
-  const note = new Text("y blows up as x → 3", { fontSize: 22, color: YELLOW, bgColor: BLACK })
+  const note = new Text("y blows up as x → 3", { fontSize: 22, bgColor: CONFIG.defaultLabelBgColor })
     .nextTo(t, DOWN, undefined, 0.5);
 
   return [formula, t, note];
@@ -61,10 +64,10 @@ const tableOfValuesVertical = (): Mobject[] => {
   // Highlight the row at x=3 (index 4) across both columns.
   t.highlight([[4, 0], [4, 1]], YELLOW);
 
-  const formula = new Tex(String.raw`y = \frac{1}{x - 3}`, { fontSize: 32, bgColor: BLACK })
+  const formula = new Tex(String.raw`y = \frac{1}{x - 3}`, { fontSize: 32, bgColor: CONFIG.defaultLabelBgColor })
     .nextTo(t, RIGHT, undefined, 0.6);
   const note = new Text("y blows up as x → 3", {
-    fontSize: 20, color: YELLOW, bgColor: BLACK,
+    fontSize: 20, bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(formula, DOWN, undefined, 0.4);
 
   return [t, formula, note];
@@ -80,8 +83,8 @@ const graphWithAsymptote = (): Mobject[] => {
   // Plot in two segments to avoid drawing across the singularity at x=3.
   // The endpoint x-values (2.8, 3.2) are chosen so y stays roughly within the
   // [-5, 5] frame: 1/(2.8-3) = -5, 1/(3.2-3) = 5.
-  plane.plot((x) => 1 / (x - 3), { xRange: [-2, 2.8, 0.02], color: RED });
-  plane.plot((x) => 1 / (x - 3), { xRange: [3.2, 8, 0.02], color: RED });
+  plane.plot((x) => 1 / (x - 3), { xRange: [-2, 2.8, 0.02], color: BLUE_E });
+  plane.plot((x) => 1 / (x - 3), { xRange: [3.2, 8, 0.02], color: BLUE_E });
 
   // Vertical asymptote at x=3 (dashed white line).
   const top = plane.coordsToPoint(3, 5);
@@ -89,11 +92,11 @@ const graphWithAsymptote = (): Mobject[] => {
   const asymptote = new Line({
     start: top,
     end: bot,
-    color: WHITE,
-    strokeWidth: 1,
+    color: CONFIG.defaultTextColor,
+    strokeWidth: 2,
     dashed: true,
   });
-  const asymLabel = new Tex(String.raw`x = 3`, { fontSize: 22, color: YELLOW, bgColor: BLACK })
+  const asymLabel = new Tex(String.raw`x = 3`, { fontSize: 22, bgColor: CONFIG.defaultLabelBgColor })
     .nextTo(top, UP, undefined, 0.05);
 
   return [plane, asymptote, asymLabel];
@@ -103,17 +106,17 @@ const graphWithAsymptote = (): Mobject[] => {
 const intervalNotationDomain = (): Mobject[] => {
   // A number line with a hole at x=3, plus interval-notation Tex.
   const nl = new NumberLine({ xRange: [-2, 8, 1], length: 10 });
-  const hole = new Circle({ radius: 0.12, strokeColor: WHITE, strokeWidth: 3, fillColor: BLACK })
+  const hole = new Circle({ radius: 0.12, strokeColor: CONFIG.defaultTextColor, strokeWidth: 3, fillColor: CONFIG.defaultLabelBgColor })
     .moveTo(nl.coordToPoint(3));
 
   const formula = new Tex(String.raw`(-\infty, 3)\ \cup\ (3, \infty)`, {
     fontSize: 36,
-    bgColor: BLACK,
+    bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(nl, UP, undefined, 0.6);
 
   const caption = new Text(
     "domain of y = 1/(x − 3): all reals except 3",
-    { fontSize: 22, bgColor: BLACK },
+    { fontSize: 22, bgColor: CONFIG.defaultLabelBgColor },
   ).nextTo(nl, DOWN, undefined, 0.7);
 
   return [nl, hole, formula, caption];
@@ -122,24 +125,24 @@ const intervalNotationDomain = (): Mobject[] => {
 // --- 4. Set-builder notation with hole --------------------------------------
 const setNotationWithHoles = (): Mobject[] => {
   const nl = new NumberLine({ xRange: [-2, 8, 1], length: 10 });
-  const hole = new Circle({ radius: 0.12, strokeColor: WHITE, strokeWidth: 3, fillColor: BLACK })
+  const hole = new Circle({ radius: 0.12, strokeColor: CONFIG.defaultTextColor, strokeWidth: 3, fillColor: CONFIG.defaultLabelBgColor })
     .moveTo(nl.coordToPoint(3));
 
   const formula = new Tex(String.raw`\{\, x \in \mathbb{R} : x \neq 3 \,\}`, {
     fontSize: 36,
-    bgColor: BLACK,
+    bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(nl, UP, undefined, 0.6);
 
   const caption = new Text("set-builder notation — exclude x = 3", {
     fontSize: 22,
-    bgColor: BLACK,
+    bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(nl, DOWN, undefined, 0.7);
 
   // Pointer arrow from formula to the hole.
   const arrow = new Arrow({
     start: [formula.bottom[0] - 0.5, formula.bottom[1] - 0.1, 0],
     end: [hole.top[0], hole.top[1] + 0.05, 0],
-    color: YELLOW,
+    color: BLUE_E,
     strokeWidth: 2,
     tipLength: 0.15,
     tipWidth: 0.15,
@@ -158,20 +161,20 @@ const openVsClosedHole = (): Mobject[] => {
   const topShade = new Line({
     start: top.coordToPoint(2),
     end: top.coordToPoint(5),
-    color: BLUE,
+    color: BLUE_E,
     strokeWidth: 6,
   });
   const openHole = new Circle({
     radius: 0.14,
-    strokeColor: BLUE,
+    strokeColor: BLUE_E,
     strokeWidth: 4,
-    fillColor: BLACK,
+    fillColor: CONFIG.defaultLabelBgColor,
     fillOpacity: 1,
   }).moveTo(top.coordToPoint(2));
   const topLabel = new Tex(String.raw`(2, 5]\ \text{— open at 2}`, {
     fontSize: 26,
-    color: BLUE,
-    bgColor: BLACK,
+    color: BLUE_E,
+    bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(top, DOWN, undefined, 0.5);
   const topG = new Group();
   topG.add(top, topShade, openHole, topLabel);
@@ -180,14 +183,14 @@ const openVsClosedHole = (): Mobject[] => {
   const botShade = new Line({
     start: bot.coordToPoint(2),
     end: bot.coordToPoint(5),
-    color: GREEN,
+    color: RED,
     strokeWidth: 6,
   });
-  const closedHole = new Dot({ point: bot.coordToPoint(2), radius: 0.14, color: GREEN });
+  const closedHole = new Dot({ point: bot.coordToPoint(2), radius: 0.14, color: RED });
   const botLabel = new Tex(String.raw`[2, 5]\ \text{— closed at 2}`, {
     fontSize: 26,
-    color: GREEN,
-    bgColor: BLACK,
+    color: RED,
+    bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(bot, DOWN, undefined, 0.5);
   const botG = new Group();
   botG.add(bot, botShade, closedHole, botLabel);
@@ -203,13 +206,13 @@ const intersectionOnNumberLine = (): Mobject[] => {
   const A = new Line({
     start: nl.coordToPoint(0),
     end: nl.coordToPoint(5),
-    color: BLUE,
+    color: BLUE_E,
     strokeWidth: 8,
   });
   const B = new Line({
     start: nl.coordToPoint(2),
     end: nl.coordToPoint(7),
-    color: GREEN,
+    color: RED,
     strokeWidth: 8,
   });
   // shift A and B vertically so they're visible separately above the line
@@ -220,18 +223,17 @@ const intersectionOnNumberLine = (): Mobject[] => {
   const inter = new Line({
     start: nl.coordToPoint(2),
     end: nl.coordToPoint(5),
-    color: YELLOW,
+    color: GREEN_D,
     strokeWidth: 8,
   });
 
-  const labelA = new Tex(String.raw`A = [0, 5]`, { fontSize: 24, color: BLUE, bgColor: BLACK })
+  const labelA = new Tex(String.raw`A = [0, 5]`, { fontSize: 24, color: BLUE_E, bgColor: CONFIG.defaultLabelBgColor })
     .nextTo(A, RIGHT, undefined, 0.3);
-  const labelB = new Tex(String.raw`B = [2, 7]`, { fontSize: 24, color: GREEN, bgColor: BLACK })
+  const labelB = new Tex(String.raw`B = [2, 7]`, { fontSize: 24, color: RED, bgColor: CONFIG.defaultLabelBgColor })
     .nextTo(B, RIGHT, undefined, 0.3);
   const labelInter = new Tex(String.raw`A \cap B = [2, 5]`, {
     fontSize: 28,
-    color: YELLOW,
-    bgColor: BLACK,
+    bgColor: CONFIG.defaultLabelBgColor,
   }).nextTo(nl, DOWN, undefined, 0.6);
 
   return [nl, A, B, inter, labelA, labelB, labelInter];
@@ -245,31 +247,31 @@ const holeFromCancellation = (): Mobject[] => {
     fillCanvas: true,
   });
   // f(x) = (x-1)(x+2) / (x-1) = x+2, except f(1) is undefined → hole at (1, 3).
-  plane.plot((x) => x + 2, { color: RED });
+  plane.plot((x) => x + 2, { color: BLUE_E });
   // Hole marker at (1, 3) — open circle.
   const hole = new Circle({
     radius: 0.15,
-    strokeColor: RED,
+    strokeColor: BLUE_E,
     strokeWidth: 4,
-    fillColor: BLACK,
+    fillColor: CONFIG.defaultLabelBgColor,
     fillOpacity: 1,
   }).moveTo(plane.coordsToPoint(1, 3));
 
   const formula = new Tex(
     String.raw`f(x) = \frac{(x-1)(x+2)}{(x-1)}`,
-    { fontSize: 32, bgColor: BLACK },
+    { fontSize: 32, bgColor: CONFIG.defaultLabelBgColor },
   );
   formula.moveTo(plane.coordsToPoint(-1.8, 4.5));
 
   const cancel = new Tex(
     String.raw`= x + 2,\quad x \neq 1`,
-    { fontSize: 28, color: YELLOW, bgColor: BLACK },
+    { fontSize: 28, bgColor: CONFIG.defaultLabelBgColor },
   ).nextTo(formula, DOWN, undefined, 0.2);
 
   const arrow = new Arrow({
     start: [cancel.right[0] + 0.3, cancel.right[1], 0],
     end: [hole.left[0] - 0.05, hole.left[1], 0],
-    color: YELLOW,
+    color: BLUE_E,
     strokeWidth: 2,
     tipLength: 0.15,
     tipWidth: 0.15,
@@ -277,7 +279,7 @@ const holeFromCancellation = (): Mobject[] => {
 
   const note = new Text(
     "(x − 1) cancels in numerator and denominator — leaves a hole at x = 1",
-    { fontSize: 18, color: YELLOW, bgColor: BLACK, maxWidth: 8 },
+    { fontSize: 18, bgColor: CONFIG.defaultLabelBgColor, maxWidth: 8 },
   );
   note.moveTo(plane.coordsToPoint(1.8, -1.2));
 
@@ -298,5 +300,6 @@ export const RATIONAL_FUNCTIONS_PANELS: Panel[] = [
 export const RATIONAL_FUNCTIONS_CASE_STUDY = {
   id: "rational-functions",
   title: "Rational functions",
+  theme: "light" as const,
   panels: RATIONAL_FUNCTIONS_PANELS,
 };

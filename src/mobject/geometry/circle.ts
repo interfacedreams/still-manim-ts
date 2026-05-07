@@ -1,5 +1,6 @@
+import { CONFIG } from "../../config.js";
 import { DEFAULT_DOT_RADIUS, ORIGIN, TAU } from "../../constants.js";
-import { BLUE, WHITE, hasDefaultColorsSet, type ManimColor } from "../../utils/color.js";
+import { BLUE, hasDefaultColorsSet, type ManimColor } from "../../utils/color.js";
 import type { Vec3 } from "../../utils/vec.js";
 import { Arc, type ArcOptions } from "./arc.js";
 
@@ -31,7 +32,7 @@ export class Dot extends Circle {
   constructor(opts: DotOptions = {}) {
     const { point = ORIGIN, radius = DEFAULT_DOT_RADIUS, color, ...rest } = opts;
     const merged: CircleOptions = { ...rest, radius, arcCenter: point };
-    if (!hasDefaultColorsSet(rest)) merged.defaultFillColor = color ?? WHITE;
+    if (!hasDefaultColorsSet(rest)) merged.defaultFillColor = color ?? CONFIG.defaultTextColor;
     super(merged);
   }
 }

@@ -29,6 +29,8 @@ export type TextOptions = {
   bgColor?: ManimColor;
   bgOpacity?: number;
   bgPadding?: number;
+  /** Corner radius (manim units) for the bg rect. 0 = sharp corners. */
+  bgRadius?: number;
 };
 
 /**
@@ -53,6 +55,7 @@ export class Text extends TransformableMobject {
   bgColor: ManimColor | null;
   bgOpacity: number;
   bgPadding: number;
+  bgRadius: number;
 
   // Layout (set by setupTextLayout)
   textTokens: string[] = [];
@@ -84,10 +87,11 @@ export class Text extends TransformableMobject {
     this.fontFile = fontFileFor(this.fontFamily, this.bold, this.italics);
     this.fontPath = `${CONFIG.fontDir}/${this.fontFile}`;
     this.bgColor = opts.bgColor ?? null;
-    // Default very translucent (~20% opaque) so the underlying grid/curve
-    // peeks through. Override with bgOpacity: 1 for full opacity.
-    this.bgOpacity = opts.bgOpacity ?? 0.2;
+    // Default opacity follows the active theme (light = fully opaque, dark =
+    // 0.2 so the grid/curve peeks through). Override per-instance as needed.
+    this.bgOpacity = opts.bgOpacity ?? CONFIG.defaultLabelBgOpacity;
     this.bgPadding = opts.bgPadding ?? 0.04;
+    this.bgRadius = opts.bgRadius ?? CONFIG.defaultLabelBgRadius;
 
     this.setupTextLayout({
       text,

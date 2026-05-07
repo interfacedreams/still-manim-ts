@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { RIGHT } from "../constants.js";
-import { RED, WHITE, YELLOW, type ManimColor } from "../utils/color.js";
+import { RED, YELLOW, type ManimColor } from "../utils/color.js";
 import type { Vec3 } from "../utils/vec.js";
 import { Group } from "./group.js";
 import { Mobject } from "./mobject.js";
@@ -33,7 +34,7 @@ export class ArrayCell extends Group {
     this.rect = new Rectangle({
       width: opts.width,
       height: opts.height,
-      strokeColor: opts.strokeColor ?? WHITE,
+      strokeColor: opts.strokeColor ?? CONFIG.defaultTextColor,
       strokeWidth: 2,
       fillOpacity: 0,
     });

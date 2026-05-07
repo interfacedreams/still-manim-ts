@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { DOWN, RIGHT } from "../constants.js";
-import { BLUE, WHITE, type ManimColor } from "../utils/color.js";
+import { BLUE, type ManimColor } from "../utils/color.js";
 import { Group } from "./group.js";
 import { Rectangle } from "./geometry/polygon.js";
 import { Tex } from "./text/tex_mobject.js";
@@ -37,7 +38,7 @@ export class FractionBar extends Group {
     const cellW = totalW / q;
     const shade = opts.shadeColor ?? BLUE;
     const empty = opts.emptyColor ?? null;
-    const border = opts.borderColor ?? WHITE;
+    const border = opts.borderColor ?? CONFIG.defaultTextColor;
 
     let prev: Rectangle | null = null;
     for (let i = 0; i < q; i++) {
@@ -46,7 +47,7 @@ export class FractionBar extends Group {
         height: h,
         strokeColor: border,
         strokeWidth: 2,
-        fillColor: i < p ? shade : (empty ?? WHITE),
+        fillColor: i < p ? shade : (empty ?? CONFIG.defaultTextColor),
         fillOpacity: i < p ? 1 : 0,
       });
       if (prev) cell.nextTo(prev, RIGHT, undefined, 0);

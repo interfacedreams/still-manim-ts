@@ -178,7 +178,9 @@ export class Canvas {
       const xMin = Math.min(...xs), xMax = Math.max(...xs);
       const yMin = Math.min(...ys), yMax = Math.max(...ys);
       const padPx = toPixelLen(text.bgPadding, this.config.pw, this.config.fw, decimals);
-      bgRect = `<rect x="${numStr(xMin - padPx, decimals)}" y="${numStr(yMin - padPx, decimals)}" width="${numStr(xMax - xMin + 2 * padPx, decimals)}" height="${numStr(yMax - yMin + 2 * padPx, decimals)}" fill="${text.bgColor.value}" fill-opacity="${text.bgOpacity}"/>`;
+      const rPx = text.bgRadius > 0 ? toPixelLen(text.bgRadius, this.config.pw, this.config.fw, decimals) : 0;
+      const rAttr = rPx > 0 ? ` rx="${numStr(rPx, decimals)}" ry="${numStr(rPx, decimals)}"` : "";
+      bgRect = `<rect x="${numStr(xMin - padPx, decimals)}" y="${numStr(yMin - padPx, decimals)}" width="${numStr(xMax - xMin + 2 * padPx, decimals)}" height="${numStr(yMax - yMin + 2 * padPx, decimals)}"${rAttr} fill="${text.bgColor.value}" fill-opacity="${text.bgOpacity}"/>`;
     }
 
     const familyKey = `${text.fontFamily}${text.italics ? "italics" : ""}${text.bold ? "bold" : ""}`;
@@ -237,7 +239,9 @@ export class Canvas {
     let bgRect = "";
     if (tex.bgColor) {
       const padPx = toPixelLen(tex.bgPadding, this.config.pw, this.config.fw, decimals);
-      bgRect = `<rect x="${numStr(ulPx[0] - padPx, decimals)}" y="${numStr(ulPx[1] - padPx, decimals)}" width="${numStr(w + 2 * padPx, decimals)}" height="${numStr(h + 2 * padPx, decimals)}" fill="${tex.bgColor.value}" fill-opacity="${tex.bgOpacity}"/>`;
+      const rPx = tex.bgRadius > 0 ? toPixelLen(tex.bgRadius, this.config.pw, this.config.fw, decimals) : 0;
+      const rAttr = rPx > 0 ? ` rx="${numStr(rPx, decimals)}" ry="${numStr(rPx, decimals)}"` : "";
+      bgRect = `<rect x="${numStr(ulPx[0] - padPx, decimals)}" y="${numStr(ulPx[1] - padPx, decimals)}" width="${numStr(w + 2 * padPx, decimals)}" height="${numStr(h + 2 * padPx, decimals)}"${rAttr} fill="${tex.bgColor.value}" fill-opacity="${tex.bgOpacity}"/>`;
     }
 
     // Inner glyph content — drop MathJax's outer <svg> and replace currentColor

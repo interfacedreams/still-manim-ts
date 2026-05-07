@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { DOWN, LEFT, RIGHT, UP } from "../constants.js";
-import { BLACK, WHITE, YELLOW, type ManimColor } from "../utils/color.js";
+import { YELLOW, type ManimColor } from "../utils/color.js";
 import { angleFromVector } from "../utils/space_ops.js";
 import { parseSvgPathToQuads } from "../utils/svg_path.js";
 import { sub, normalize, scale as vscale, type Vec3 } from "../utils/vec.js";
@@ -62,7 +63,7 @@ export class Brace extends VMobject {
     const direction = opts.direction ?? DOWN;
     const buff = opts.buff ?? 0.1;
     const sharpness = opts.sharpness ?? 2;
-    const color = opts.color ?? WHITE;
+    const color = opts.color ?? CONFIG.defaultTextColor;
 
     // Brace points "down" by default (target ABOVE). Width spans the
     // perpendicular dimension of target relative to `direction`.
@@ -130,7 +131,7 @@ export class Brace extends VMobject {
     opts: BraceOptions & { fontSize?: number; textOptions?: TextOptions } = {},
   ): Group {
     const brace = new Brace(target, { ...opts, direction });
-    const tOpts: TextOptions = { bgColor: BLACK, ...(opts.textOptions ?? {}), fontSize: opts.fontSize ?? 22 };
+    const tOpts: TextOptions = { bgColor: CONFIG.defaultLabelBgColor, ...(opts.textOptions ?? {}), fontSize: opts.fontSize ?? 22 };
     const t = new Text(label, tOpts);
     t.nextTo(brace.tipAnchor, direction, undefined, 0.1);
     const g = new Group();
@@ -146,7 +147,7 @@ export class Brace extends VMobject {
     opts: BraceOptions & { fontSize?: number; texOptions?: TexOptions } = {},
   ): Group {
     const brace = new Brace(target, { ...opts, direction });
-    const tOpts: TexOptions = { bgColor: BLACK, ...(opts.texOptions ?? {}), fontSize: opts.fontSize ?? 28 };
+    const tOpts: TexOptions = { bgColor: CONFIG.defaultLabelBgColor, ...(opts.texOptions ?? {}), fontSize: opts.fontSize ?? 28 };
     const t = new Tex(latex, tOpts);
     t.nextTo(brace.tipAnchor, direction, undefined, 0.1);
     const g = new Group();
@@ -243,7 +244,7 @@ export class Pointer extends Arrow {
     opts: PointerOptions & { fontSize?: number; textOptions?: TextOptions } = {},
   ): Group {
     const p = new Pointer(target, opts);
-    const tOpts: TextOptions = { bgColor: BLACK, ...(opts.textOptions ?? {}), fontSize: opts.fontSize ?? 22 };
+    const tOpts: TextOptions = { bgColor: CONFIG.defaultLabelBgColor, ...(opts.textOptions ?? {}), fontSize: opts.fontSize ?? 22 };
     const t = new Text(label, tOpts);
     const dir = normalize(opts.approachFrom ?? DOWN);
     // Place the label past the tail in the same direction the pointer comes from.

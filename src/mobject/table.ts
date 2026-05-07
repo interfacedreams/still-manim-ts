@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { DOWN, RIGHT } from "../constants.js";
-import { RED, WHITE, YELLOW, type ManimColor } from "../utils/color.js";
+import { RED, YELLOW, type ManimColor } from "../utils/color.js";
 import { Group } from "./group.js";
 import { Mobject } from "./mobject.js";
 import { Cross, Highlight } from "./composites.js";
@@ -41,7 +42,7 @@ export class TableCell extends Group {
     this.rect = new Rectangle({
       width: opts.width,
       height: opts.height,
-      strokeColor: opts.strokeColor ?? WHITE,
+      strokeColor: opts.strokeColor ?? CONFIG.defaultTextColor,
       strokeWidth: 2,
       fillOpacity: 0,
     });

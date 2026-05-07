@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { DOWN, RIGHT } from "../constants.js";
-import { BLUE, WHITE, type ManimColor } from "../utils/color.js";
+import { BLUE, type ManimColor } from "../utils/color.js";
 import { Group } from "./group.js";
 import { Line } from "./geometry/line.js";
 import { Rectangle } from "./geometry/polygon.js";
@@ -54,7 +55,7 @@ export class BarChart extends Group {
     this.axis = new Line({
       start: [-totalW / 2, 0, 0],
       end: [totalW / 2, 0, 0],
-      color: opts.axisColor ?? WHITE,
+      color: opts.axisColor ?? CONFIG.defaultTextColor,
       strokeWidth: 2,
     });
     this.add(this.axis);
@@ -68,7 +69,7 @@ export class BarChart extends Group {
         height: Math.max(h, 1e-3),
         fillColor: barColorFn(i),
         fillOpacity: 1,
-        strokeColor: opts.axisColor ?? WHITE,
+        strokeColor: opts.axisColor ?? CONFIG.defaultTextColor,
         strokeWidth: 1,
       });
       // Anchor bottom at y=0.

@@ -20,6 +20,8 @@ export type TexOptions = {
   bgColor?: ManimColor;
   bgOpacity?: number;
   bgPadding?: number;
+  /** Corner radius (manim units) for the bg rect. 0 = sharp corners. */
+  bgRadius?: number;
 };
 
 /**
@@ -36,6 +38,7 @@ export class Tex extends TransformableMobject {
   bgColor: ManimColor | null;
   bgOpacity: number;
   bgPadding: number;
+  bgRadius: number;
   protected _heading: number;
 
   /** Pixel-space dimensions at the current font size. */
@@ -56,8 +59,9 @@ export class Tex extends TransformableMobject {
     this.fillColor = opts.color ?? CONFIG.defaultTextColor;
     this.fillOpacity = opts.opacity ?? 1.0;
     this.bgColor = opts.bgColor ?? null;
-    this.bgOpacity = opts.bgOpacity ?? 0.2;
+    this.bgOpacity = opts.bgOpacity ?? CONFIG.defaultLabelBgOpacity;
     this.bgPadding = opts.bgPadding ?? 0.04;
+    this.bgRadius = opts.bgRadius ?? CONFIG.defaultLabelBgRadius;
     this.rendered = renderTex(latex, opts.display ?? false);
 
     const onePx = exToPx(this.fontSize);

@@ -88,9 +88,10 @@ const html = `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>still-manim-ts conformance outputs</title>
+  <title>Home — still-manim-ts</title>
   <style>
-    body { font-family: -apple-system, system-ui, sans-serif; margin: 24px; background: #1a1a1a; color: #eee; }
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: #1a1a1a; color: #eee; }
+    main { margin: 24px; }
     h1 { font-weight: 500; }
     section { margin: 32px 0; padding-bottom: 24px; border-bottom: 1px solid #333; }
     h3 { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 14px; color: #aaa; margin: 0 0 12px; }
@@ -106,18 +107,30 @@ const html = `<!doctype html>
     nav.case-studies a { color: #9bd; text-decoration: none; }
     nav.case-studies a:hover { text-decoration: underline; }
     nav.case-studies .meta { color: #666; font-size: 12px; margin-left: 4px; }
+    header.site-nav { position: sticky; top: 0; z-index: 10; background: #111; border-bottom: 1px solid #333; padding: 10px 24px; display: flex; gap: 16px; align-items: center; }
+    header.site-nav a { color: #9bd; text-decoration: none; font-size: 14px; }
+    header.site-nav a:hover { text-decoration: underline; }
+    header.site-nav .crumb { color: #666; font-size: 14px; }
+    header.site-nav .here { color: #eee; font-size: 14px; }
   </style>
 </head>
 <body>
-  <h1>still-manim-ts — conformance outputs (${written} scenes)</h1>
-  <p style="color:#888; max-width:60ch;">Side-by-side render of each scene. Python (left) and TypeScript port (right) should look identical. Path numbers match within 1e-9; only cosmetic SVG-string differences (number formatting, attribute order) remain. Newest scenes are at the top. ${pyCount} Python ↔ TS comparisons + ${tsOnlyCount} TS-only composites.</p>
-  <nav class="case-studies">
-    <h2>Case studies</h2>
-    <ul>
-      ${CASE_STUDIES.map((cs) => `<li><a href="case-studies/${cs.id}/index.html">${cs.title}</a><span class="meta"> · ${cs.panels.length} panels</span></li>`).join("\n      ")}
-    </ul>
-  </nav>
-  ${rows}
+  <header class="site-nav">
+    <a href="index.html">Home</a>
+    <span class="crumb">·</span>
+    <a href="case-studies/index.html">Case studies</a>
+  </header>
+  <main>
+    <h1>Home (${written} scenes)</h1>
+    <p style="color:#888; max-width:60ch;">Side-by-side render of each scene. Python (left) and TypeScript port (right) should look identical. Path numbers match within 1e-9; only cosmetic SVG-string differences (number formatting, attribute order) remain. Newest scenes are at the top. ${pyCount} Python ↔ TS comparisons + ${tsOnlyCount} TS-only composites.</p>
+    <nav class="case-studies">
+      <h2>Case studies</h2>
+      <ul>
+        ${CASE_STUDIES.map((cs) => `<li><a href="case-studies/${cs.id}/index.html">${cs.title}</a><span class="meta"> · ${cs.panels.length} panels</span></li>`).join("\n        ")}
+      </ul>
+    </nav>
+    ${rows}
+  </main>
 </body>
 </html>
 `;

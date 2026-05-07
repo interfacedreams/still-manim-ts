@@ -1,5 +1,6 @@
+import { CONFIG } from "../../config.js";
 import { LEFT, ORIGIN, RIGHT } from "../../constants.js";
-import { WHITE, type ManimColor } from "../../utils/color.js";
+import type { ManimColor } from "../../utils/color.js";
 import { angleFromVector } from "../../utils/space_ops.js";
 import type { Vec3 } from "../../utils/vec.js";
 import { Mobject } from "../mobject.js";
@@ -23,7 +24,7 @@ export class Line extends VMobject {
       start = LEFT,
       end = RIGHT,
       buff = 0.0,
-      color = WHITE,
+      color = CONFIG.defaultTextColor,
       opacity = 1.0,
       strokeColor,
       strokeOpacity,

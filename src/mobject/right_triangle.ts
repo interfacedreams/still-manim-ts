@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { DOWN, LEFT } from "../constants.js";
-import { BLACK, WHITE, type ManimColor } from "../utils/color.js";
+import type { ManimColor } from "../utils/color.js";
 import type { Vec3 } from "../utils/vec.js";
 import { Group } from "./group.js";
 import { Line } from "./geometry/line.js";
@@ -44,7 +45,7 @@ export class RightTriangle extends Group {
     super();
     this.legLength = legA;
     this.altLegLength = legB;
-    const color = opts.color ?? WHITE;
+    const color = opts.color ?? CONFIG.defaultTextColor;
     const sw = opts.strokeWidth ?? 4;
 
     const corner: Vec3 = [0, 0, 0];
@@ -71,19 +72,19 @@ export class RightTriangle extends Group {
     const hypText = opts.hypLabel === null ? null : (opts.hypLabel ?? "c");
 
     if (legText !== null) {
-      const t = new Tex(legText, { fontSize, bgColor: BLACK });
+      const t = new Tex(legText, { fontSize, bgColor: CONFIG.defaultLabelBgColor });
       t.nextTo(this.hLeg.midpoint, DOWN, undefined, buff);
       this.labels.leg = t;
       this.add(t);
     }
     if (altText !== null) {
-      const t = new Tex(altText, { fontSize, bgColor: BLACK });
+      const t = new Tex(altText, { fontSize, bgColor: CONFIG.defaultLabelBgColor });
       t.nextTo(this.vLeg.midpoint, LEFT, undefined, buff);
       this.labels.altLeg = t;
       this.add(t);
     }
     if (hypText !== null) {
-      const t = new Tex(hypText, { fontSize, bgColor: BLACK });
+      const t = new Tex(hypText, { fontSize, bgColor: CONFIG.defaultLabelBgColor });
       // Place the hypotenuse label outward (up-and-right) from its midpoint.
       const mid = this.hyp.midpoint;
       t.moveTo([mid[0] + buff, mid[1] + buff, 0]);

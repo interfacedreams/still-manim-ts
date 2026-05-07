@@ -2,6 +2,8 @@
 
 TypeScript port of /Users/tommyjoseph/tommy11jo/still-manim/smanim/. Use Python as ground truth for geometry; diverge for cosmetic/UX bugs (always document).
 
+Visual style rules for case studies live in `STYLES.md` — read it before adding/recoloring panels.
+
 ## Inner loop after a code change
 1. `npx tsc --noEmit` — typecheck.
 2. `npm test` — runs Vitest against `still-manim/fixtures/*.json`. Failures here mean numeric drift from Python.

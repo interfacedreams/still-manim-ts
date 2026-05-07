@@ -5,29 +5,41 @@
   <title>Unit circle → cosine graph</title>
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: #1a1a1a; color: #eee; }
-    header { padding: 14px 24px; background: #111; border-bottom: 1px solid #333; }
-    header h1 { margin: 0; font-weight: 500; font-size: 18px; }
-    header p { margin: 4px 0 0; color: #888; font-size: 13px; }
+    body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: #fafafa; color: #222; }
+    header.site-nav { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid #ddd; padding: 10px 24px; display: flex; gap: 12px; align-items: center; }
+    header.site-nav a { color: #4a90c2; text-decoration: none; font-size: 14px; }
+    header.site-nav a:hover { text-decoration: underline; }
+    header.site-nav .crumb { color: #666; font-size: 14px; }
+    header.site-nav .here { color: #222; font-size: 14px; }
+    header.page { padding: 14px 24px; background: #fff; border-bottom: 1px solid #ddd; }
+    header.page h1 { margin: 0; font-weight: 500; font-size: 18px; }
+    header.page p { margin: 4px 0 0; color: #666; font-size: 13px; }
     main {
       display: flex; flex-direction: column; gap: 24px;
       padding: 24px; max-width: 1400px; margin: 0 auto;
     }
     section { display: flex; flex-direction: column; }
     section h2 {
-      margin: 0 0 8px; font-weight: 500; font-size: 14px; color: #aaa;
+      margin: 0 0 8px; font-weight: 500; font-size: 14px; color: #555;
       font-family: ui-monospace, "SF Mono", Menlo, monospace;
     }
     section object {
       width: 100%; height: 600px; display: block;
-      background: #000; border: 1px solid #333; border-radius: 4px;
+      background: #fff; border: 1px solid #ddd; border-radius: 4px;
     }
   </style>
 </head>
 <body>
-  <header>
+  <header class="site-nav">
+    <a href="../../index.html">Home</a>
+    <span class="crumb">·</span>
+    <a href="../index.html">Case studies</a>
+    <span class="crumb">·</span>
+    <span class="here">Unit circle → cosine graph</span>
+  </header>
+  <header class="page">
     <h1>Unit circle → cosine graph</h1>
-    <p>4 panels &middot; scroll vertically.</p>
+    <p>4 panels &middot; scroll vertically &middot; light mode.</p>
   </header>
   <main>
       <section>

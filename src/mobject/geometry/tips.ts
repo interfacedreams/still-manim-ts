@@ -1,5 +1,6 @@
+import { CONFIG } from "../../config.js";
 import { DEFAULT_ARROW_TIP_LENGTH } from "../../constants.js";
-import { hasDefaultColorsSet, WHITE, type ManimColor } from "../../utils/color.js";
+import { hasDefaultColorsSet, type ManimColor } from "../../utils/color.js";
 import type { Vec3 } from "../../utils/vec.js";
 import { Triangle, type TriangleOptions } from "./polygon.js";
 
@@ -49,7 +50,7 @@ export class ArrowTriangleFilledTip extends ArrowTriangleTip {
   constructor(opts: ArrowTipOptions & { color?: ManimColor } = {}) {
     const { color, ...rest } = opts;
     if (!hasDefaultColorsSet(rest)) {
-      (rest as ArrowTipOptions).defaultFillColor = color ?? WHITE;
+      (rest as ArrowTipOptions).defaultFillColor = color ?? CONFIG.defaultTextColor;
     }
     super(rest);
   }

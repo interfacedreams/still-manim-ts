@@ -1,5 +1,6 @@
+import { CONFIG } from "../config.js";
 import { ORIGIN, PI, TAU } from "../constants.js";
-import { BLACK, BLUE, WHITE, type ManimColor } from "../utils/color.js";
+import { BLUE, type ManimColor } from "../utils/color.js";
 import type { Vec3 } from "../utils/vec.js";
 import { Group } from "./group.js";
 import { Circle } from "./geometry/circle.js";
@@ -75,8 +76,8 @@ export class UnitCircle extends Group {
     const r = opts.radius ?? 2;
     this.radius = r;
     const circleColor = opts.circleColor ?? BLUE;
-    const axisColor = opts.axisColor ?? WHITE;
-    const dotColor = opts.dotColor ?? WHITE;
+    const axisColor = opts.axisColor ?? CONFIG.defaultTextColor;
+    const dotColor = opts.dotColor ?? CONFIG.defaultTextColor;
     const fontSize = opts.fontSize ?? 18;
 
     this.circle = new Circle({ radius: r, strokeColor: circleColor, fillOpacity: 0, strokeWidth: 3 });
@@ -111,7 +112,7 @@ export class UnitCircle extends Group {
       if (opts.showLabels !== false) {
         const text = customLabel(a);
         if (text !== null) {
-          label = new Tex(text, { fontSize, bgColor: BLACK });
+          label = new Tex(text, { fontSize, bgColor: CONFIG.defaultLabelBgColor });
           // Place outward along the radial direction, beyond the circle.
           const buff = 0.4;
           label.moveTo([x + Math.cos(a) * buff, y + Math.sin(a) * buff, 0]);
