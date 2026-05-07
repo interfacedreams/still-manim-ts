@@ -20,6 +20,7 @@ import {
   NumberPlane,
   Cross,
   Highlight,
+  SurroundingRectangle,
   Text,
   Tex,
   ArrayRow,
@@ -29,6 +30,9 @@ import {
   UnitCircle,
   FractionBar,
   BarChart,
+  Graph,
+  WeightedGraph,
+  arrowEdgeFactory,
   Brace,
   Underline,
   Pointer,
@@ -154,6 +158,11 @@ export const SCENES: Record<string, () => Mobject[]> = {
     const c = new Circle({ radius: 0.7 });
     const h = new Highlight({ target: c });
     return [c, h];
+  },
+  surrounding_rect_on_text: () => {
+    const t = new Text("important");
+    const r = new SurroundingRectangle({ target: t, buff: 0.15, cornerRadius: 0.1 });
+    return [t, r];
   },
 
   // Text scenes.
@@ -438,6 +447,73 @@ export const SCENES: Record<string, () => Mobject[]> = {
     const labeled = Pointer.withLabel(row.at(2), "median candidate", { approachFrom: UP });
     return [row, labeled];
   },
+
+  // Graph scenes (TS-only).
+  graph_triangle_default: () => [new Graph()],
+  graph_circular_5: () => [
+    new Graph({
+      vertices: [0, 1, 2, 3, 4],
+      edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]],
+      layout: "circular",
+      includeVertexLabels: true,
+    }),
+  ],
+  graph_spring_petersen: () => {
+    // Petersen graph — a classic 10-vertex 3-regular graph that exercises
+    // d3-force enough to be a real layout test.
+    const outer: Array<[number, number]> = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0]];
+    const spokes: Array<[number, number]> = [[0, 5], [1, 6], [2, 7], [3, 8], [4, 9]];
+    const inner: Array<[number, number]> = [[5, 7], [7, 9], [9, 6], [6, 8], [8, 5]];
+    return [
+      new Graph({
+        vertices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        edges: [...outer, ...spokes, ...inner],
+        layout: "spring",
+        layoutConfig: { seed: 42 },
+        includeVertexLabels: true,
+      }),
+    ];
+  },
+  graph_tree_layout: () => [
+    new Graph({
+      vertices: ["a", "b", "c", "d", "e", "f", "g"],
+      edges: [
+        ["a", "b"],
+        ["a", "c"],
+        ["b", "d"],
+        ["b", "e"],
+        ["c", "f"],
+        ["c", "g"],
+      ],
+      layout: "tree",
+      rootVertex: "a",
+      includeVertexLabels: true,
+    }),
+  ],
+  graph_directed_arrows: () => [
+    new Graph({
+      vertices: [0, 1, 2, 3],
+      edges: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 2]],
+      layout: "circular",
+      edgeFactory: arrowEdgeFactory,
+      includeVertexLabels: true,
+    }),
+  ],
+  weighted_graph_4: () => [
+    new WeightedGraph({
+      vertices: [0, 1, 2, 3],
+      edges: [[0, 1], [1, 2], [2, 3], [3, 0], [0, 2]],
+      layout: "circular",
+      includeVertexLabels: true,
+      edgeLabels: [
+        [[0, 1], 5],
+        [[1, 2], 3],
+        [[2, 3], 7],
+        [[3, 0], 2],
+        [[0, 2], 4],
+      ],
+    }),
+  ],
 };
 
 export const SCENE_NAMES = Object.keys(SCENES).sort();

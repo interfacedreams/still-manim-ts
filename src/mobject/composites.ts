@@ -1,4 +1,5 @@
-import { RED, type ManimColor, YELLOW } from "../utils/color.js";
+import { GRAY, RED, type ManimColor, YELLOW } from "../utils/color.js";
+import { SMALL_BUFF } from "../constants.js";
 import type { Vec3 } from "../utils/vec.js";
 import { Group } from "./group.js";
 import { Mobject } from "./mobject.js";
@@ -68,5 +69,48 @@ export class Highlight extends Rectangle {
     }
     super({ width, height, fillColor: color, fillOpacity: opacity });
     if (center[0] !== 0 || center[1] !== 0 || center[2] !== 0) this.moveTo(center);
+  }
+}
+
+export type SurroundingRectangleOptions = {
+  /** Mobject the rectangle wraps. Required. */
+  target: Mobject;
+  /** Stroke color (default GRAY when no fillColor is set). */
+  strokeColor?: ManimColor;
+  strokeWidth?: number;
+  strokeOpacity?: number;
+  /** Set to make the rectangle a filled backdrop instead of an outline. */
+  fillColor?: ManimColor;
+  fillOpacity?: number;
+  /** Padding between target bbox and rectangle edges. Default SMALL_BUFF. */
+  buff?: number;
+  cornerRadius?: number;
+};
+
+/**
+ * Stroke-only rectangle wrapping a target's bounding box, plus optional padding.
+ * Mirrors smanim.mobject.geometry.shape_matchers.SurroundingRectangle.
+ */
+export class SurroundingRectangle extends Rectangle {
+  buff: number;
+  surrounded: Mobject;
+  constructor(opts: SurroundingRectangleOptions) {
+    const { target, buff = SMALL_BUFF, cornerRadius = 0 } = opts;
+    const rectOpts: ConstructorParameters<typeof Rectangle>[0] = {
+      width: target.width + 2 * buff,
+      height: target.height + 2 * buff,
+      cornerRadius,
+    };
+    // Mirror Python: outline by default, filled-only if caller passes fillColor and no stroke.
+    if (opts.fillColor !== undefined) rectOpts.fillColor = opts.fillColor;
+    if (opts.fillOpacity !== undefined) rectOpts.fillOpacity = opts.fillOpacity;
+    if (opts.strokeColor !== undefined) rectOpts.strokeColor = opts.strokeColor;
+    else if (opts.fillColor === undefined) rectOpts.defaultStrokeColor = GRAY;
+    if (opts.strokeWidth !== undefined) rectOpts.strokeWidth = opts.strokeWidth;
+    if (opts.strokeOpacity !== undefined) rectOpts.strokeOpacity = opts.strokeOpacity;
+    super(rectOpts);
+    this.buff = buff;
+    this.surrounded = target;
+    this.moveTo(target.center);
   }
 }
