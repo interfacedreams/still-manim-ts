@@ -9,12 +9,10 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { Canvas } from "../src/index.js";
-import { RATIONAL_FUNCTIONS_CASE_STUDY } from "../tests/case_studies/rational_functions.js";
+import { CASE_STUDIES } from "../tests/case_studies/index.js";
 
 const REPO = "/Users/tommyjoseph/tommy11jo/still-manim-ts";
 const OUT_ROOT = join(REPO, "outputs", "case-studies");
-
-const CASE_STUDIES = [RATIONAL_FUNCTIONS_CASE_STUDY];
 
 rmSync(OUT_ROOT, { recursive: true, force: true });
 mkdirSync(OUT_ROOT, { recursive: true });

@@ -11,6 +11,7 @@ import { join } from "node:path";
 
 import { Canvas, type Mobject } from "../src/index.js";
 import { SCENES } from "../tests/conformance/scenes.js";
+import { CASE_STUDIES } from "../tests/case_studies/index.js";
 
 const REPO = "/Users/tommyjoseph/tommy11jo/still-manim-ts";
 const FIXTURES_DIR = "/Users/tommyjoseph/tommy11jo/still-manim/fixtures";
@@ -98,11 +99,24 @@ const html = `<!doctype html>
     figcaption { padding: 6px 10px; font-size: 12px; color: #888; background: #111; border-bottom: 1px solid #333; }
     object { width: 100%; height: 320px; display: block; background: #000; }
     .missing { width: 100%; height: 320px; display: flex; align-items: center; justify-content: center; background: #000; color: #555; font-size: 12px; font-style: italic; }
+    nav.case-studies { background: #111; border: 1px solid #333; border-radius: 4px; padding: 14px 18px; margin: 16px 0 32px; }
+    nav.case-studies h2 { margin: 0 0 8px; font-size: 14px; font-weight: 500; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+    nav.case-studies ul { margin: 0; padding-left: 20px; }
+    nav.case-studies li { margin: 4px 0; color: #ccc; }
+    nav.case-studies a { color: #9bd; text-decoration: none; }
+    nav.case-studies a:hover { text-decoration: underline; }
+    nav.case-studies .meta { color: #666; font-size: 12px; margin-left: 4px; }
   </style>
 </head>
 <body>
   <h1>still-manim-ts — conformance outputs (${written} scenes)</h1>
   <p style="color:#888; max-width:60ch;">Side-by-side render of each scene. Python (left) and TypeScript port (right) should look identical. Path numbers match within 1e-9; only cosmetic SVG-string differences (number formatting, attribute order) remain. Newest scenes are at the top. ${pyCount} Python ↔ TS comparisons + ${tsOnlyCount} TS-only composites.</p>
+  <nav class="case-studies">
+    <h2>Case studies</h2>
+    <ul>
+      ${CASE_STUDIES.map((cs) => `<li><a href="case-studies/${cs.id}/index.html">${cs.title}</a><span class="meta"> · ${cs.panels.length} panels</span></li>`).join("\n      ")}
+    </ul>
+  </nav>
   ${rows}
 </body>
 </html>

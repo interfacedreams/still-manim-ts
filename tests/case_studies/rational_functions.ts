@@ -3,20 +3,17 @@
  * y = 1/(x − 3), interval/set notation, and a factored rational with a hole.
  */
 import {
-  ArrayRow,
   Arrow,
-  Brace,
   Circle,
   DOWN,
   Dot,
   Group,
-  Highlight,
   Line,
   NumberLine,
   NumberPlane,
-  PI,
   RED,
   RIGHT,
+  Table,
   Tex,
   Text,
   UP,
@@ -32,32 +29,25 @@ export type Panel = { name: string; title: string; build: () => Mobject[] };
 
 // --- 1. Table of values -----------------------------------------------------
 const tableOfValues = (): Mobject[] => {
-  // Use strings so 2.999 / 3.001 don't get rounded to "3" by the formatter.
-  const xLabels: Array<number | string> = ["x", "2.9", "2.99", "2.999", "3", "3.001", "3.01", "3.1"];
-  const yLabels: Array<number | string> = ["y", "−10", "−100", "−1000", "DNE", "1000", "100", "10"];
-  // Force uniform cell width so the two rows line up column-for-column.
-  const cellWidth = 1.2;
-  const cellHeight = 0.7;
-  const xRow = new ArrayRow(xLabels, { cellWidth, cellHeight, fontSize: 24 });
-  const yRow = new ArrayRow(yLabels, { cellWidth, cellHeight, fontSize: 22 })
-    .nextTo(xRow, DOWN, undefined, 0);
-  // Highlight x=3 column (index 4 in cell array — "x" header + "3" position).
-  const xIdx = xLabels.indexOf("3");
-  xRow.highlight([xIdx], YELLOW);
-  yRow.highlight([xIdx], YELLOW);
+  const data: Array<Array<string>> = [
+    ["x", "2.9", "2.99", "2.999", "3",   "3.001", "3.01", "3.1"],
+    ["y", "−10", "−100", "−1000", "DNE", "1000",  "100",  "10"],
+  ];
+  const t = new Table(data, { fontSize: 24, cellHeight: 0.7 });
+  // Highlight x=3 column (index 4).
+  t.highlight([[0, 4], [1, 4]], YELLOW);
 
   const formula = new Tex(String.raw`y = \frac{1}{x - 3}`, { fontSize: 36, bgColor: BLACK })
-    .nextTo(xRow, UP, undefined, 0.5);
-
+    .nextTo(t, UP, undefined, 0.5);
   const note = new Text("y blows up as x → 3", { fontSize: 22, color: YELLOW, bgColor: BLACK })
-    .nextTo(yRow, DOWN, undefined, 0.5);
+    .nextTo(t, DOWN, undefined, 0.5);
 
-  return [formula, xRow, yRow, note];
+  return [formula, t, note];
 };
 
 // --- 1b. Same table but with x and y as vertical columns -------------------
 const tableOfValuesVertical = (): Mobject[] => {
-  const rows: Array<[string, string]> = [
+  const data: Array<Array<string>> = [
     ["x", "y"],
     ["2.9", "−10"],
     ["2.99", "−100"],
@@ -67,32 +57,17 @@ const tableOfValuesVertical = (): Mobject[] => {
     ["3.01", "100"],
     ["3.1", "10"],
   ];
-  const cellWidth = 1.4;
-  const cellHeight = 0.55;
-  const rowMobs: ArrayRow[] = [];
-  let prev: ArrayRow | null = null;
-  for (const [xv, yv] of rows) {
-    const r = new ArrayRow([xv, yv], { cellWidth, cellHeight, fontSize: 22 });
-    if (prev) r.nextTo(prev, DOWN, undefined, 0);
-    rowMobs.push(r);
-    prev = r;
-  }
-  // Highlight the row corresponding to x=3 (index 4 in `rows`).
-  rowMobs[4]!.highlight([0, 1], YELLOW);
-
-  const table = new Group();
-  table.add(...rowMobs);
+  const t = new Table(data, { fontSize: 22, cellHeight: 0.55 });
+  // Highlight the row at x=3 (index 4) across both columns.
+  t.highlight([[4, 0], [4, 1]], YELLOW);
 
   const formula = new Tex(String.raw`y = \frac{1}{x - 3}`, { fontSize: 32, bgColor: BLACK })
-    .nextTo(table, RIGHT, undefined, 0.6);
-
+    .nextTo(t, RIGHT, undefined, 0.6);
   const note = new Text("y blows up as x → 3", {
-    fontSize: 20,
-    color: YELLOW,
-    bgColor: BLACK,
+    fontSize: 20, color: YELLOW, bgColor: BLACK,
   }).nextTo(formula, DOWN, undefined, 0.4);
 
-  return [table, formula, note];
+  return [t, formula, note];
 };
 
 // --- 2. Graph of y = 1/(x − 3) with asymptote -------------------------------

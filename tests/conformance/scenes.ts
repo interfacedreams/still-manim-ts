@@ -23,6 +23,8 @@ import {
   Text,
   Tex,
   ArrayRow,
+  Table,
+  type CellContent,
   RightTriangle,
   UnitCircle,
   FractionBar,
@@ -199,6 +201,52 @@ export const SCENES: Record<string, () => Mobject[]> = {
       DOWN,
     );
     return [row, note];
+  },
+
+  // ---- Table (rows × cols, mixed string/number/Mobject cells) ----
+  table_basic: () => [
+    new Table([
+      ["x", "2.9", "2.99", "2.999", "3",   "3.001", "3.01", "3.1"],
+      ["y", "−10", "−100", "−1000", "DNE", "1000",  "100",  "10"],
+    ]),
+  ],
+  table_vertical: () => [
+    new Table([
+      ["name", "score", "grade"],
+      ["Alice", "92",   "A"],
+      ["Bob",   "85",   "B"],
+      ["Carol", "78",   "C"],
+      ["Dan",   "94",   "A"],
+    ]),
+  ],
+  table_highlighted: () => {
+    const t = new Table([
+      ["x", "2.9", "2.99", "2.999", "3",   "3.001", "3.01", "3.1"],
+      ["y", "−10", "−100", "−1000", "DNE", "1000",  "100",  "10"],
+    ]);
+    t.highlight([[0, 4], [1, 4]], YELLOW);
+    return [t];
+  },
+  table_with_crosses: () => {
+    const t = new Table([
+      [1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 10],
+      [11, 12, 13, 14, 15],
+    ], { fontSize: 24 });
+    t.cross([[0, 0], [1, 2], [2, 4]]);
+    return [t];
+  },
+  table_mixed_content: () => {
+    // Tex math + plain text + actual Mobjects in cells.
+    const data: CellContent[][] = [
+      [new Tex(String.raw`\theta`, { fontSize: 28 }), new Tex(String.raw`\cos\theta`, { fontSize: 28 }), new Text("color", { fontSize: 22 })],
+      [new Tex("0", { fontSize: 28 }),                "1",                                              new Dot({ radius: 0.1, color: GREEN })],
+      [new Tex(String.raw`\tfrac{\pi}{2}`, { fontSize: 28 }), "0",                                      new Dot({ radius: 0.1, color: YELLOW })],
+      [new Tex(String.raw`\pi`, { fontSize: 28 }),    "−1",                                             new Dot({ radius: 0.1, color: GREEN })],
+      [new Tex(String.raw`\tfrac{3\pi}{2}`, { fontSize: 28 }), "0",                                     new Dot({ radius: 0.1, color: YELLOW })],
+      [new Tex(String.raw`2\pi`, { fontSize: 28 }),   "1",                                              new Dot({ radius: 0.1, color: GREEN })],
+    ];
+    return [new Table(data, { cellHeight: 0.8 })];
   },
 
   // ---- Tex (LaTeX math via MathJax) ----

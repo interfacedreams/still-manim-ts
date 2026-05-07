@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Unit circle → cosine graph</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: #1a1a1a; color: #eee; }
+    header { padding: 14px 24px; background: #111; border-bottom: 1px solid #333; }
+    header h1 { margin: 0; font-weight: 500; font-size: 18px; }
+    header p { margin: 4px 0 0; color: #888; font-size: 13px; }
+    main {
+      display: flex; flex-direction: column; gap: 24px;
+      padding: 24px; max-width: 1400px; margin: 0 auto;
+    }
+    section { display: flex; flex-direction: column; }
+    section h2 {
+      margin: 0 0 8px; font-weight: 500; font-size: 14px; color: #aaa;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    section object {
+      width: 100%; height: 600px; display: block;
+      background: #000; border: 1px solid #333; border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Unit circle → cosine graph</h1>
+    <p>4 panels &middot; scroll vertically.</p>
+  </header>
+  <main>
+      <section>
+        <h2>1. Cosine is the x-coordinate on the unit circle</h2>
+        <object type="image/svg+xml" data="01_cos_is_x.svg"></object>
+      </section>
+      <section>
+        <h2>2. Unwrap the unit circle into y = cos θ</h2>
+        <object type="image/svg+xml" data="02_unwrap.svg"></object>
+      </section>
+      <section>
+        <h2>3. Cosine values at the 5 landmark angles</h2>
+        <object type="image/svg+xml" data="03_landmark_table.svg"></object>
+      </section>
+      <section>
+        <h2>4. Reference angles &amp; sign flips between quadrants</h2>
+        <object type="image/svg+xml" data="04_reference.svg"></object>
+      </section></main>
+</body>
+</html>
