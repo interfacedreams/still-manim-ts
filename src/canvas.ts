@@ -7,6 +7,7 @@ import { Mobject } from "./mobject/mobject.js";
 import { VMobject } from "./mobject/vmobject.js";
 import { Rectangle } from "./mobject/geometry/polygon.js";
 import { Text } from "./mobject/text/text_mobject.js";
+import { Tex } from "./mobject/text/tex_mobject.js";
 import { round, toPixelCoords, toPixelLen } from "./utils/space_ops.js";
 import type { Vec3 } from "./utils/vec.js";
 import type { ManimColor } from "./utils/color.js";
@@ -109,6 +110,9 @@ export class Canvas {
       if (m instanceof VMobject) {
         const el = this.vmobjectToPath(m, decimals);
         if (el) elements.push(el);
+      } else if (m instanceof Tex) {
+        const el = this.texToSvg(m, decimals);
+        if (el) elements.push(el);
       } else if (m instanceof Text) {
         elements.push(...this.textToSvg(m, decimals));
       } else if (m instanceof Group) {
@@ -122,7 +126,7 @@ export class Canvas {
     }
 
     const x = 0, y = 0, w = config.pw, h = config.ph;
-    const svg = `<svg id="smanim-canvas" viewBox="${x} ${y} ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${elements.join("")}</svg>`;
+    const svg = `<svg id="smanim-canvas" viewBox="${x} ${y} ${w} ${h}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">${elements.join("")}</svg>`;
     return svg;
   }
 
@@ -209,6 +213,40 @@ export class Canvas {
 
     const textEl = `<text class="${styleClass}" id="${objId}" transform="${transform}" x="${numStr(startPt[0], decimals)}" y="${numStr(startPt[1], decimals)}">${tspans.join("")}</text>`;
     return [styleEl, textEl];
+  }
+
+  private texToSvg(tex: Tex, decimals: number): string | null {
+    const ulPx = this.toPixelCoords([tex.svgUpperLeft], decimals)[0]!;
+    const w = tex.widthPx;
+    const h = tex.heightPx;
+    const [vbX, vbY, vbW, vbH] = tex.rendered.viewBox;
+
+    // Inner glyph content — drop MathJax's outer <svg> and replace currentColor
+    // with the actual fill (avoids CSS-inheritance pitfalls in librsvg/magick).
+    const fill = tex.fillColor.value;
+    const inner = tex.rendered.svg
+      .replace(/^<svg[^>]*>/, "")
+      .replace(/<\/svg>\s*$/, "")
+      .replace(/currentColor/g, fill);
+    const objId = `id-${idOf(tex)}`;
+
+    // Place via a nested <g> transform = translate(ulPx) * scale(w/vbW, h/vbH) * translate(-vbX, -vbY).
+    // This avoids nested <svg> positioning, which librsvg/some renderers
+    // mishandle.
+    const scaleX = w / vbW;
+    const scaleY = h / vbH;
+    const tx = ulPx[0] - vbX * scaleX;
+    const ty = ulPx[1] - vbY * scaleY;
+    let transform = `translate(${numStr(tx, decimals)} ${numStr(ty, decimals)}) scale(${numStr(scaleX, decimals)} ${numStr(scaleY, decimals)})`;
+
+    // SVG transform is clockwise; manim heading is CCW — negate.
+    const headingDeg = -tex.heading * (180 / Math.PI);
+    if (headingDeg !== 0) {
+      const centerPx = this.toPixelCoords([tex.center], decimals)[0]!;
+      transform = `rotate(${numStr(headingDeg, decimals)} ${numStr(centerPx[0], decimals)} ${numStr(centerPx[1], decimals)}) ${transform}`;
+    }
+
+    return `<g id="${objId}" fill-opacity="${tex.fillOpacity}" transform="${transform}">${inner}</g>`;
   }
 
   private groupToRect(g: Mobject, decimals: number): string | null {

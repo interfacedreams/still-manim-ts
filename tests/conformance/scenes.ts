@@ -21,6 +21,7 @@ import {
   Cross,
   Highlight,
   Text,
+  Tex,
   ArrayRow,
   RIGHT,
   DOWN,
@@ -188,6 +189,27 @@ export const SCENES: Record<string, () => Mobject[]> = {
       DOWN,
     );
     return [row, note];
+  },
+
+  // ---- Tex (LaTeX math via MathJax) ----
+  tex_fraction: () => [new Tex(String.raw`\frac{a + b}{2}`, { fontSize: 48 })],
+  tex_pythagorean: () => [new Tex(String.raw`a^2 + b^2 = c^2`, { fontSize: 48 })],
+  tex_quadratic: () => [
+    new Tex(String.raw`x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}`, { fontSize: 40 }),
+  ],
+  tex_sum: () => [
+    new Tex(String.raw`\sum_{i=1}^{n} i = \frac{n(n+1)}{2}`, { fontSize: 48, display: true }),
+  ],
+  // The median lesson again — but with a real fraction label this time.
+  median_lesson_tex: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    row.cross([0, 3]);
+    row.highlight([1, 2]);
+    const formula = new Tex(String.raw`\frac{5 + 7}{2} = 6`, { fontSize: 32 }).nextTo(
+      row.between(1, 2),
+      DOWN,
+    );
+    return [row, formula];
   },
 };
 
