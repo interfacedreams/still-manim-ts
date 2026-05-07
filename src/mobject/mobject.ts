@@ -152,19 +152,32 @@ export abstract class Mobject {
   /**
    * Move so this mobject's `-direction`-side critical point sits adjacent to
    * `target`'s `direction`-side critical point, plus a buffer in `direction`.
+   *
+   * `target` accepts a Mobject, a Vec3 point, or an array of Mobjects (in
+   * which case the joint bbox of the array is used — useful for placing
+   * a label "between" two items, e.g. `.nextTo([row.at(1), row.at(2)], DOWN)`).
    */
   nextTo(
-    target: Mobject | Vec3,
+    target: Mobject | Vec3 | Mobject[],
     direction: Vec3 = RIGHT,
     alignedEdge?: Vec3,
     buff: number = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
   ): this {
     this.requireBboxDir(direction);
-    const destPt = target instanceof Mobject ? target.getCriticalPoint(direction) : target;
+    let destPt: Vec3;
+    if (target instanceof Mobject) {
+      destPt = target.getCriticalPoint(direction);
+    } else if (Array.isArray(target) && target.length > 0 && target[0] instanceof Mobject) {
+      destPt = jointCriticalPoint(target as Mobject[], direction);
+    } else {
+      destPt = target as Vec3;
+    }
     const curPt = this.getCriticalPoint([-direction[0], -direction[1], -direction[2]]);
     const toShift = add(sub(destPt, curPt), vscale(direction, buff));
     this.shift(toShift);
-    if (alignedEdge !== undefined) this.alignTo(target, alignedEdge);
+    if (alignedEdge !== undefined && !(Array.isArray(target) && target[0] instanceof Mobject)) {
+      this.alignTo(target as Mobject | Vec3, alignedEdge);
+    }
     return this;
   }
 
@@ -214,6 +227,28 @@ export abstract class Mobject {
   setColor(_color: ManimColor, _family = false): this { return this; }
   setOpacity(_opacity: number, _family = false): this { return this; }
 }
+
+/** Joint 9-point bbox lookup across a list of mobjects. */
+const jointCriticalPoint = (mobjects: Mobject[], direction: Vec3): Vec3 => {
+  let xMin = Infinity, yMin = Infinity, xMax = -Infinity, yMax = -Infinity;
+  for (const m of mobjects) {
+    for (const fam of m.getFamily()) {
+      for (const p of fam.boundingPoints) {
+        if (p[0] < xMin) xMin = p[0];
+        if (p[0] > xMax) xMax = p[0];
+        if (p[1] < yMin) yMin = p[1];
+        if (p[1] > yMax) yMax = p[1];
+      }
+    }
+  }
+  const xMid = xMin + (xMax - xMin) / 2;
+  const yMid = yMin + (yMax - yMin) / 2;
+  const dx = Math.trunc(direction[0]);
+  const dy = Math.trunc(direction[1]);
+  const xs = [xMin, xMid, xMax];
+  const ys = [yMin, yMid, yMax];
+  return [xs[dx + 1]!, ys[dy + 1]!, 0];
+};
 
 const getClosestIntersectingPoint2dHelper = (
   bounding: Vec3[],

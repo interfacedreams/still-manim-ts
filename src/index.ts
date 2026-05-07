@@ -30,4 +30,5 @@ export { Axes, NumberPlane } from "./mobject/graphing/coordinate_systems.js";
 export { ParametricFunction } from "./mobject/graphing/functions.js";
 export { Cross, Highlight } from "./mobject/composites.js";
 export { Text, type TextDecoration, type TextOptions } from "./mobject/text/text_mobject.js";
+export { ArrayRow, ArrayCell, type ArrayRowOptions } from "./mobject/array_row.js";
 export { Canvas, canvas } from "./canvas.js";

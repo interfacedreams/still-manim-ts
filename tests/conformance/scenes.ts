@@ -21,6 +21,7 @@ import {
   Cross,
   Highlight,
   Text,
+  ArrayRow,
   RIGHT,
   DOWN,
   UP,
@@ -162,6 +163,31 @@ export const SCENES: Record<string, () => Mobject[]> = {
     const b = new Text("beta").nextTo(a, RIGHT);
     const c = new Text("gamma").nextTo(b, RIGHT);
     return [a, b, c];
+  },
+
+  // ---- ArrayRow scenes (boxed cells / tape diagrams) ----
+  array_row_basic: () => [new ArrayRow([2, 5, 7, 8])],
+  array_row_letters: () => [new ArrayRow(["a", "b", "c", "d", "e"])],
+  array_row_crossed: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    row.cross([0, 3]);
+    return [row];
+  },
+  array_row_highlighted: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    row.highlight([1, 2]);
+    return [row];
+  },
+  // The user's canonical "median of even-length list" lesson.
+  median_lesson: () => {
+    const row = new ArrayRow([2, 5, 7, 8]);
+    row.cross([0, 3]);
+    row.highlight([1, 2]);
+    const note = new Text("median = (5+7)/2 = 6", { color: RED }).nextTo(
+      row.between(1, 2),
+      DOWN,
+    );
+    return [row, note];
   },
 };
 
