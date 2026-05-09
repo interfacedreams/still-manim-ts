@@ -43,8 +43,10 @@ const runLabel = new Tex("\\text{run} = 4", { color: RED, fontSize: 18 })
   .nextTo(runLeg, DOWN, undefined, 0.15);
 const riseLabel = new Tex("\\text{rise} = 2", { color: RED, fontSize: 18 })
   .nextTo(riseLeg, RIGHT, undefined, 0.15);
+// Pass an explicit x off the y-axis — the default midpoint (x=0) lands the
+// label right on top of the y-axis arrow on symmetric ranges.
 const eqLabel = new Tex("y = \\tfrac{1}{2}x + 1", { color: BLUE_E, fontSize: 22 })
-  .moveTo(plane.coordsToPoint(-2.5, 3.5));
+  .moveTo(plane.topLabelPoint(1.7));
 
 canvas.add(plane, line, runLeg, riseLeg, startDot, endDot, runLabel, riseLabel, eqLabel);
 

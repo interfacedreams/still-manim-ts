@@ -55,6 +55,19 @@ export class Axes extends Group {
     return [xp[0], yp[1], 0];
   }
 
+  /**
+   * Scene-space point in the strip above the top grid line — the canonical
+   * spot for an equation/title label. Sits above `yMax` (extrapolated) and
+   * below the y-axis arrow tip.
+   *
+   * Default `x` is the horizontal midpoint of the x-axis range; default `buff`
+   * leaves clear space above the top tick label without crowding the arrow tip.
+   */
+  topLabelPoint(x?: number, buff: number = 0.5): Vec3 {
+    const cx = x ?? (this.xAxis.xMin + this.xAxis.xMax) / 2;
+    return this.coordsToPoint(cx, this.yAxis.xMax + buff);
+  }
+
   /** Plot y = f(x) over the x-axis range (or a custom xRange). */
   plot(
     fn: (x: number) => number,

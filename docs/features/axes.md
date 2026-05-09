@@ -51,6 +51,7 @@ NumberPlane.fromAxesRanges({
 
 - `coordsToPoint(x: number, y: number): Vec3` — graph-space `(x, y)` to scene-space point. Use this for **all** placement of dots / labels / annotations on the plot.
 - `plot(fn, opts?): ParametricFunction` — sample `y = fn(x)` over the x-axis range. `opts.xRange` (`[min, max]` or `[min, max, step]`) overrides the default range. Other `opts` pass through to `ParametricFunction` (`color`, `strokeWidth`).
+- `topLabelPoint(x?: number, buff: number = 0.5): Vec3` — canonical position for an equation/title label, just above the top grid line and well below the y-axis arrow tip. Default `x` is the horizontal midpoint of the x-axis range. Use as `myTex.moveTo(plane.topLabelPoint(centerX))`.
 
 ## Minimal example
 

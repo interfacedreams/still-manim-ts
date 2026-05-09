@@ -46,25 +46,48 @@ export class ParametricFunction extends Group {
     ts.push(this.tMax);
 
     const points: Vec3[] = ts.map((t) => this.function(t));
+    const { yMin, yMax } = opts;
 
-    let cur: Vec3[] = [];
-    for (const p of points) {
-      if (p[1] >= opts.yMin && p[1] <= opts.yMax) {
-        cur.push(p);
-      } else {
-        cur.push(p);
-        if (cur.length > 1) {
-          const polyOpts: { vertices: Vec3[]; strokeColor: ManimColor; strokeWidth?: number } = { vertices: cur, strokeColor: color };
-          if (strokeWidth !== undefined) polyOpts.strokeWidth = strokeWidth;
-          this.add(new Polygram(polyOpts));
-        }
-        cur = [];
-      }
-    }
-    if (cur.length > 1) {
-      const polyOpts: { vertices: Vec3[]; strokeColor: ManimColor; strokeWidth?: number } = { vertices: cur, strokeColor: color };
+    const inRange = (p: Vec3): boolean => p[1] >= yMin && p[1] <= yMax;
+
+    // Linear interpolation between two points to land exactly on a horizontal
+    // y-boundary. Used to clip cleanly at yMin/yMax instead of including the
+    // first out-of-range sample as a segment endpoint (which "ramps" past).
+    const boundaryPoint = (a: Vec3, b: Vec3): Vec3 => {
+      const yBoundary = b[1] > yMax || a[1] > yMax ? yMax : yMin;
+      const dy = b[1] - a[1];
+      // Caller guarantees a and b straddle the boundary, so dy ≠ 0.
+      const u = (yBoundary - a[1]) / dy;
+      return [a[0] + u * (b[0] - a[0]), yBoundary, a[2] + u * (b[2] - a[2])];
+    };
+
+    const emit = (segment: Vec3[]): void => {
+      if (segment.length <= 1) return;
+      const polyOpts: { vertices: Vec3[]; strokeColor: ManimColor; strokeWidth?: number } = { vertices: segment, strokeColor: color };
       if (strokeWidth !== undefined) polyOpts.strokeWidth = strokeWidth;
       this.add(new Polygram(polyOpts));
+    };
+
+    let cur: Vec3[] = [];
+    let prev: Vec3 | null = null;
+    let prevIn = false;
+    for (const p of points) {
+      const curIn = inRange(p);
+      if (prev === null) {
+        if (curIn) cur.push(p);
+      } else if (prevIn && curIn) {
+        cur.push(p);
+      } else if (prevIn && !curIn) {
+        cur.push(boundaryPoint(prev, p));
+        emit(cur);
+        cur = [];
+      } else if (!prevIn && curIn) {
+        cur = [boundaryPoint(prev, p), p];
+      }
+      // !prevIn && !curIn → both outside; do nothing.
+      prev = p;
+      prevIn = curIn;
     }
+    emit(cur);
   }
 }
