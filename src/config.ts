@@ -1,6 +1,11 @@
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
+
 import { LOW_RES, ORIGIN, DEFAULT_FONT_SIZE } from "./constants.js";
 import { BLACK, THEMES, WHITE, type ManimColor, type ThemeName } from "./utils/color.js";
 import type { Vec3 } from "./utils/vec.js";
+
+const BUNDLED_FONT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..", "fonts");
 
 export type ConfigOptions = {
   density?: number;
@@ -33,9 +38,10 @@ export class Config {
   defaultLabelBgRadius: number = 0.08;
   defaultTextFontSize: number = DEFAULT_FONT_SIZE;
   defaultTextFontFamily: string = "computer-modern";
-  // Where bundled .ttf font files live. For now, points at still-manim's fonts dir.
-  // Override per-instance with `setFontDir(path)` to ship custom fonts.
-  fontDir: string = "/Users/tommyjoseph/tommy11jo/still-manim/smanim/mobject/text/fonts";
+  // Where bundled .ttf font files live — resolves to <package>/fonts/ in both
+  // dev (running from src/) and consumers (running from dist/). Override by
+  // assigning a different absolute path before constructing any Text/Tex.
+  fontDir: string = BUNDLED_FONT_DIR;
 
   constructor(opts: ConfigOptions = {}) {
     this.density = opts.density ?? DEFAULT_DENSITY;

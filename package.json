@@ -1,12 +1,25 @@
 {
   "name": "still-manim-ts",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
   "description": "TypeScript port of still-manim — static and interactive SVG diagrams in the browser, with LaTeX.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "fonts"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:lib": "tsc -p tsconfig.build.json",
+    "prepare": "npm run build:lib",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
