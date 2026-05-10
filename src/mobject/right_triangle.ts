@@ -6,6 +6,7 @@ import { Group } from "./group.js";
 import { Line } from "./geometry/line.js";
 import { Polygon } from "./geometry/polygon.js";
 import { Tex } from "./text/tex_mobject.js";
+import { Angle } from "./angle.js";
 
 export type RightTriangleOptions = {
   /** Show the small square at the right angle. */
@@ -101,20 +102,13 @@ export class RightTriangle extends Group {
   }
 
   private addRightAngleMarker(color: ManimColor, strokeWidth: number): void {
-    // Small square nestled into the right-angle corner. Size = ~12% of the
-    // shorter leg, capped to keep it from dominating tiny triangles.
+    // Size ~12% of the shorter leg, capped to keep it from dominating tiny
+    // triangles.
     const size = Math.min(this.legLength, this.altLegLength) * 0.12;
-    const c = this.vertices[0];
-    const sq: Polygon = new Polygon({
-      vertices: [
-        [c[0], c[1], 0],
-        [c[0] + size, c[1], 0],
-        [c[0] + size, c[1] + size, 0],
-        [c[0], c[1] + size, 0],
-      ],
-      strokeColor: color,
+    const sq = Angle.right(this.vertices[0], this.vertices[1], this.vertices[2], {
+      size,
+      color,
       strokeWidth: Math.max(1, strokeWidth - 2),
-      fillOpacity: 0,
     });
     this.rightAngleMarker = sq;
     this.add(sq);

@@ -7,6 +7,7 @@ import { VMobject } from "../vmobject.js";
 import { Arrow } from "../geometry/arrow.js";
 import { Line } from "../geometry/line.js";
 import { Text } from "../text/text_mobject.js";
+import { Tex } from "../text/tex_mobject.js";
 
 export type NumberLineOptions = {
   /** [start, end] inclusive, optionally [start, end, step]. */
@@ -24,6 +25,13 @@ export type NumberLineOptions = {
   endArrowTip?: Arrow | null;
   strokeWidth?: number;
   color?: ManimColor;
+  /**
+   * Override the default numeric label per tick. Receives the tick value;
+   * return a `Tex` / `Text` to use it as the label, or `undefined` to fall
+   * back to the default numeric `Text`. Useful for rendering π-multiples,
+   * fractions, or any non-numeric labeling.
+   */
+  customLabel?: (value: number) => Tex | Text | undefined;
 };
 
 /** Format a number for axis labels: integers stay clean, others rounded to 2 dp with trailing zeros stripped. */
@@ -109,7 +117,7 @@ export class NumberLine extends Group {
       this.add(this.ticks);
     }
     if (includeNumbers && this.ticks) {
-      this.labels = this.generateLabels(numbersFontSize);
+      this.labels = this.generateLabels(numbersFontSize, opts.customLabel);
       this.add(this.labels);
     }
     if (!isHorizontal) this.rotate(PI / 2);
@@ -143,16 +151,21 @@ export class NumberLine extends Group {
     return ticks;
   }
 
-  generateLabels(fontSize: number): Group {
+  generateLabels(fontSize: number, customLabel?: (value: number) => Tex | Text | undefined): Group {
     const labels = new Group();
     if (!this.ticks) return labels;
     const ticksList = this.ticks.submobjects;
     const range = this.getTickRange();
     for (let i = 0; i < range.length && i < ticksList.length; i++) {
       const tick = ticksList[i]!;
-      // Black backing rect so the label stays readable when other geometry
-      // (curves, grid, neighboring ticks) crowds it.
-      const label = new Text(formatNumber(range[i]!), { fontSize, bgColor: CONFIG.defaultLabelBgColor });
+      const v = range[i]!;
+      // Backing rect so the label stays readable when other geometry (curves,
+      // grid, neighboring ticks) crowds it. The default Text path sets bgColor
+      // at construction; for custom labels, we apply the same default after
+      // the fact unless the caller already set one explicitly.
+      const label = customLabel?.(v)
+        ?? new Text(formatNumber(v), { fontSize, bgColor: CONFIG.defaultLabelBgColor });
+      if (label.bgColor === null) label.bgColor = CONFIG.defaultLabelBgColor;
       label.nextTo(tick, DOWN, undefined, 0);
       labels.add(label);
     }

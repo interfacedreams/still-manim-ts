@@ -28,7 +28,9 @@ A LaTeX math expression rendered through MathJax and embedded into the canvas as
 - `color` (`ManimColor`, default = `CONFIG.defaultTextColor`) — fill color. In light theme that's `BLACK`; in dark, `WHITE`. Override to color-match a graphed object.
 - `display` (`boolean`, default `false`) — `true` switches to LaTeX **display style** (block math): taller fractions, larger operators, full-size limits. Use for centerpiece equations.
 - `opacity` (`number`, default `1.0`).
-- `bgColor`, `bgOpacity`, `bgPadding`, `bgRadius` — optional rounded backing rect behind the formula. Useful when the label sits on top of a grid or curve and would otherwise be unreadable.
+- `bgColor` (`ManimColor | null`, default = `CONFIG.defaultLabelBgColor`) — backing rect color. **Defaults to ON** so labels stay readable when they overlap a curve or grid (theme-aware: WHITE in light, BLACK in dark, at the theme's default opacity). Pass `bgOpacity: 0` to hide visually, or `bgColor: null` to skip rendering the rect entirely.
+- `bgOpacity` (`number`, default = `CONFIG.defaultLabelBgOpacity`) — `0.65` in light, `0.2` in dark. Curves/grid peek through.
+- `bgPadding`, `bgRadius` — padding and corner radius of the backing rect.
 - `position` (`Vec3`, default `UL`) — upper-left anchor in scene coords. Usually you'll position later with `.moveTo()` / `.nextTo()` instead of setting this.
 - `startAngle` (`number`, radians) — initial rotation.
 - `zIndex` (`number`, default `1`) — Tex defaults to `z=1` so it draws on top of `z=0` geometry.
@@ -57,4 +59,4 @@ canvas.add(eq);
 - **Whitespace in math is ignored.** Use `\\;`, `\\,`, or `\\quad` to add explicit spacing.
 - **Fractions:** `\\frac{a}{b}` is full-size, `\\tfrac{a}{b}` is text-style (smaller, fits inline labels). Prefer `\\tfrac` for short coefficients like `\\tfrac{1}{2}x`.
 - **`.nextTo` 3rd argument is `alignedEdge`, not `buff`.** Pass `undefined` for `alignedEdge` if you only want to set `buff`: `.nextTo(target, DOWN, undefined, 0.15)`.
-- **Backing rect on busy graphs.** If a Tex label crosses gridlines or a curve, set `bgColor: WHITE` (or theme bg color) with `bgOpacity: 0.65` so the label stays readable.
+- **Backing rect is on by default.** No need to set `bgColor` to make labels readable on a graph — the default already does this (theme-aware). To turn it off, pass `bgOpacity: 0` (invisible but still occupies space) or `bgColor: null` (no rect rendered).

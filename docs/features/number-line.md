@@ -36,6 +36,7 @@ A horizontal (or vertical) line with evenly-spaced ticks, optional numeric label
 - `includeArrowTips` (`boolean`, default `true`) — arrow tips at both ends signaling "this continues".
 - `startArrowTip`, `endArrowTip` (`Arrow | null`) — supply a pre-built arrow to override either tip; pass `null` to drop one.
 - `strokeWidth` (`number`, default `2.0`), `color` (`ManimColor`, default = text color).
+- `customLabel` (`(value: number) => Tex | Text | undefined`) — per-tick override. Receives the tick value; return a `Tex` / `Text` for that value, or `undefined` to fall back to the default numeric `Text` label. Use for π-multiples, fractions, or any non-numeric labeling.
 
 ## Methods
 
@@ -54,6 +55,31 @@ import { canvas, NumberLine } from "still-manim-ts";
 const nl = new NumberLine({ xRange: [-5, 5, 1], length: 8 });
 canvas.add(nl);
 ```
+
+## π-multiples and other non-numeric labels
+
+Pass `customLabel` to render specific tick values as Tex. Returning `undefined` for a value falls back to the default numeric label, so the override only fires where you want it.
+
+```ts
+import { NumberPlane, Tex, PI } from "still-manim-ts";
+
+const piLabel = (v: number): Tex | undefined => {
+  const eps = 1e-9;
+  if (Math.abs(v - PI) < eps) return new Tex("\\pi", { fontSize: 18 });
+  if (Math.abs(v + PI) < eps) return new Tex("-\\pi", { fontSize: 18 });
+  if (Math.abs(v - PI / 2) < eps) return new Tex("\\tfrac{\\pi}{2}", { fontSize: 18 });
+  if (Math.abs(v + PI / 2) < eps) return new Tex("-\\tfrac{\\pi}{2}", { fontSize: 18 });
+  return undefined;
+};
+
+const plane = NumberPlane.fromAxesRanges({
+  xAxisRange: [-PI, PI, PI / 2],
+  yAxisRange: [-1.5, 1.5, 1],
+  axisConfig: { customLabel: piLabel },
+});
+```
+
+When passed via `axisConfig`, the same callback applies to both axes — that's usually fine because `undefined` returns fall through to defaults. For per-axis customization, build the `xAxis` / `yAxis` `NumberLine`s manually and pass them to `new NumberPlane({ xAxis, yAxis, … })`.
 
 ## Common pitfalls
 

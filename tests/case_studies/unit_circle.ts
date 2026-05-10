@@ -7,7 +7,7 @@
  * where we need to distinguish 4+ items in a single panel.
  */
 import {
-  Arc,
+  Angle,
   Arrow,
   CONFIG,
   DOWN,
@@ -86,12 +86,12 @@ const cosineIsXCoordinate = (): Mobject[] => {
   });
 
   // Angle arc (tertiary visual) → GREEN_D.
-  const angleArc = new Arc({
-    radius: 0.5,
-    startAngle: 0,
-    angle: theta,
-    defaultStrokeColor: GREEN_D,
-  });
+  const angleArc = new Angle(
+    ORIGIN,
+    [1, 0, 0],
+    [Math.cos(theta), Math.sin(theta), 0],
+    { radius: 0.5, color: GREEN_D, strokeWidth: 4 },
+  );
   const thetaLabel = new Tex(String.raw`\theta`, { fontSize: 28, bgColor: CONFIG.defaultLabelBgColor });
   thetaLabel.moveTo([0.75 * Math.cos(theta / 2), 0.75 * Math.sin(theta / 2), 0]);
 
@@ -356,13 +356,12 @@ const referenceAngles = (): Mobject[] => {
 
   // Reference-angle arc for a2 — drawn at the negative-x side, marking the
   // angle from neg-x axis up to p2. Colored RED to bind it to a2.
-  const refArc = new Arc({
-    radius: 0.45,
-    startAngle: a2,
-    angle: PI - a2,
-    arcCenter: [ucCx, ucCy, 0],
-    defaultStrokeColor: RED,
-  });
+  const refArc = new Angle(
+    [ucCx, ucCy, 0],
+    p2,
+    [ucCx - 1, ucCy, 0],
+    { radius: 0.45, color: RED, strokeWidth: 4 },
+  );
   const refLabel = new Tex(String.raw`\tfrac{\pi}{3}`, {
     fontSize: 20,
     bgColor: CONFIG.defaultLabelBgColor,
@@ -370,13 +369,12 @@ const referenceAngles = (): Mobject[] => {
   refLabel.moveTo([ucCx + 0.7 * Math.cos((a2 + PI) / 2), ucCy + 0.7 * Math.sin((a2 + PI) / 2), 0]);
 
   // The original π/3 arc in Q1 — colored GREEN_D to bind it to a1.
-  const a1Arc = new Arc({
-    radius: 0.45,
-    startAngle: 0,
-    angle: a1,
-    arcCenter: [ucCx, ucCy, 0],
-    defaultStrokeColor: GREEN_D,
-  });
+  const a1Arc = new Angle(
+    [ucCx, ucCy, 0],
+    [ucCx + 1, ucCy, 0],
+    p1,
+    { radius: 0.45, color: GREEN_D, strokeWidth: 4 },
+  );
   const a1Label = new Tex(String.raw`\tfrac{\pi}{3}`, {
     fontSize: 20,
     bgColor: CONFIG.defaultLabelBgColor,

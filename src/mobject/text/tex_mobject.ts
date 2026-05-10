@@ -58,9 +58,13 @@ export class Tex extends TransformableMobject {
     this.fontSize = opts.fontSize ?? CONFIG.defaultTextFontSize;
     this.fillColor = opts.color ?? CONFIG.defaultTextColor;
     this.fillOpacity = opts.opacity ?? 1.0;
-    this.bgColor = opts.bgColor ?? null;
+    // Backing rect on by default — Tex labels overlap curves, grids, and
+    // other geometry often enough that an opt-in default would be a footgun.
+    // Pass `bgOpacity: 0` to hide visually, or `bgColor: null` to skip
+    // rendering the rect entirely. (Theme-aware: WHITE in light, BLACK in dark.)
+    this.bgColor = opts.bgColor === undefined ? CONFIG.defaultLabelBgColor : opts.bgColor;
     this.bgOpacity = opts.bgOpacity ?? CONFIG.defaultLabelBgOpacity;
-    this.bgPadding = opts.bgPadding ?? 0.04;
+    this.bgPadding = opts.bgPadding ?? 0.02;
     this.bgRadius = opts.bgRadius ?? CONFIG.defaultLabelBgRadius;
     this.rendered = renderTex(latex, opts.display ?? false);
 

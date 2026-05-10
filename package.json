@@ -13,7 +13,9 @@
   },
   "files": [
     "dist",
-    "fonts"
+    "fonts",
+    "docs",
+    "examples"
   ],
   "scripts": {
     "dev": "vite",

@@ -90,7 +90,7 @@ export class Text extends TransformableMobject {
     // Default opacity follows the active theme (light = fully opaque, dark =
     // 0.2 so the grid/curve peeks through). Override per-instance as needed.
     this.bgOpacity = opts.bgOpacity ?? CONFIG.defaultLabelBgOpacity;
-    this.bgPadding = opts.bgPadding ?? 0.04;
+    this.bgPadding = opts.bgPadding ?? 0.02;
     this.bgRadius = opts.bgRadius ?? CONFIG.defaultLabelBgRadius;
 
     this.setupTextLayout({

@@ -39,6 +39,7 @@ export { Tex, type TexOptions } from "./mobject/text/tex_mobject.js";
 export { ArrayRow, ArrayCell, type ArrayRowOptions } from "./mobject/array_row.js";
 export { Table, TableCell, type TableOptions, type CellRef, type CellContent } from "./mobject/table.js";
 export { RightTriangle, type RightTriangleOptions } from "./mobject/right_triangle.js";
+export { Angle, type AngleOptions } from "./mobject/angle.js";
 export { UnitCircle, type UnitCircleOptions } from "./mobject/unit_circle.js";
 export { FractionBar, type FractionBarOptions } from "./mobject/fraction_bar.js";
 export { BarChart, type BarChartOptions } from "./mobject/bar_chart.js";
@@ -62,3 +63,4 @@ export {
   type PointerOptions,
 } from "./mobject/annotations.js";
 export { Canvas, canvas } from "./canvas.js";
+export { docsPath, examplesPath } from "./docs.js";
