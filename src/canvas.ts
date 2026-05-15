@@ -180,7 +180,7 @@ export class Canvas {
       const padPx = toPixelLen(text.bgPadding, this.config.pw, this.config.fw, decimals);
       const rPx = text.bgRadius > 0 ? toPixelLen(text.bgRadius, this.config.pw, this.config.fw, decimals) : 0;
       const rAttr = rPx > 0 ? ` rx="${numStr(rPx, decimals)}" ry="${numStr(rPx, decimals)}"` : "";
-      bgRect = `<rect x="${numStr(xMin - padPx, decimals)}" y="${numStr(yMin - padPx, decimals)}" width="${numStr(xMax - xMin + 2 * padPx, decimals)}" height="${numStr(yMax - yMin + 2 * padPx, decimals)}"${rAttr} fill="${text.bgColor.value}" fill-opacity="${text.bgOpacity}"/>`;
+      bgRect = `<rect x="${numStr(xMin - padPx, decimals)}" y="${numStr(yMin - padPx, decimals)}" width="${numStr(xMax - xMin + 2 * padPx, decimals)}" height="${numStr(yMax - yMin + 2 * padPx, decimals)}"${rAttr} fill="${colorToValue(text.bgColor)}" fill-opacity="${text.bgOpacity}"/>`;
     }
 
     const familyKey = `${text.fontFamily}${text.italics ? "italics" : ""}${text.bold ? "bold" : ""}`;
@@ -189,7 +189,7 @@ export class Canvas {
     const cssLines = [
       `.${styleClass} {`,
       `    text-decoration: ${text.textDecoration};`,
-      `    fill: ${text.fillColor.value};`,
+      `    fill: ${colorToValue(text.fillColor)};`,
       `    font-size: ${text.fontSize}px;`,
       `    fill-opacity: ${text.fillOpacity};`,
       `    font-family: ${familyKey};`,
@@ -241,12 +241,12 @@ export class Canvas {
       const padPx = toPixelLen(tex.bgPadding, this.config.pw, this.config.fw, decimals);
       const rPx = tex.bgRadius > 0 ? toPixelLen(tex.bgRadius, this.config.pw, this.config.fw, decimals) : 0;
       const rAttr = rPx > 0 ? ` rx="${numStr(rPx, decimals)}" ry="${numStr(rPx, decimals)}"` : "";
-      bgRect = `<rect x="${numStr(ulPx[0] - padPx, decimals)}" y="${numStr(ulPx[1] - padPx, decimals)}" width="${numStr(w + 2 * padPx, decimals)}" height="${numStr(h + 2 * padPx, decimals)}"${rAttr} fill="${tex.bgColor.value}" fill-opacity="${tex.bgOpacity}"/>`;
+      bgRect = `<rect x="${numStr(ulPx[0] - padPx, decimals)}" y="${numStr(ulPx[1] - padPx, decimals)}" width="${numStr(w + 2 * padPx, decimals)}" height="${numStr(h + 2 * padPx, decimals)}"${rAttr} fill="${colorToValue(tex.bgColor)}" fill-opacity="${tex.bgOpacity}"/>`;
     }
 
     // Inner glyph content — drop MathJax's outer <svg> and replace currentColor
     // with the actual fill (avoids CSS-inheritance pitfalls in librsvg/magick).
-    const fill = tex.fillColor.value;
+    const fill = colorToValue(tex.fillColor) ?? "currentColor";
     const inner = tex.rendered.svg
       .replace(/^<svg[^>]*>/, "")
       .replace(/<\/svg>\s*$/, "")
@@ -298,6 +298,17 @@ export class Canvas {
   }
 }
 
-const colorToValue = (c: ManimColor | null): string | null => (c ? c.value : null);
+// Accept either a `ManimColor` (the documented type) or a raw CSS color string
+// (`"#9B59B6"`, `"rgb(...)"`, named colors). LLM-emitted code routinely passes
+// string literals despite the typed API — without this coercion paths render
+// with `fill="none" stroke="none"` and disappear silently, which is the kind
+// of footgun we can fix once at the boundary instead of relying on every
+// caller to wrap in `new ManimColor(...)`.
+const colorToValue = (
+  c: ManimColor | string | null | undefined,
+): string | null => {
+  if (c == null) return null;
+  return typeof c === "string" ? c : c.value;
+};
 
 export const canvas = new Canvas(CONFIG);
